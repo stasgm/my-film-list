@@ -1,0 +1,18 @@
+{
+  "name": "NodeServer",
+  "version": "1.0.0",
+  "description": "Simple server on nodejs",
+  "main": "index.js",
+  "author": "Stanislau Shliakhtsich",
+  "license": "MIT",
+  "scripts": {
+    "webpack": "webpack",
+    "start": "node server.js",
+    "sv": "node-supervisor server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "compression": "^1.7.2",
+    "express": "^4.16.3"
+  }
+}
