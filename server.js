@@ -5,8 +5,9 @@ const express = require("express"),
   app = express();
 const bodyParser = require("body-parser");
 const compression = require("compression");
+const db = require('./db.json');
 
-const scrape = require("website-scraper");
+// const scrape = require("website-scraper");
 
 const { URL, URLSearchParams } = require("url");
 
@@ -18,7 +19,16 @@ app.use(compression());
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, "public")));
 
+
 // API
+app.get("/test", (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  res.write(JSON.stringify(db));
+  res.end();
+});
+
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
