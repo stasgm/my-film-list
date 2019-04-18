@@ -5,9 +5,7 @@ const express = require("express"),
   app = express();
 const bodyParser = require("body-parser");
 const compression = require("compression");
-const db = require('./db.json');
-
-// const scrape = require("website-scraper");
+const db = require("./db.json");
 
 const { URL, URLSearchParams } = require("url");
 
@@ -16,17 +14,38 @@ app.set("port", process.env.PORT || 3000);
 app.use(bodyParser.json());
 app.use(compression());
 
+const MongoClient = require("mongodb").MongoClient;
+const uri =
+  "mongodb+srv://Stanislau:WWk5m9yZLE2bjgK@stanislau1-ussxi.gcp.mongodb.net/test?retryWrites=true";
+const client = new MongoClient(uri, { useNewUrlParser: true });
+client.connect(err => {
+  console.log("connected!");
+});
+
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, "public")));
 
-
 // API
 app.get("/test", (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Access-Control-Allow-Origin", "*");
 
-  res.write(JSON.stringify(db));
-  res.end();
+  client.connect(err => {
+    if (err) {
+      console.log(err);
+    } else {
+      const db = client.db("crdb");// .collection("currency");
+      // perform actions on the collection object
+      db.collections().then((r) => {
+        res.write(r.collectionName);
+        res.end();
+      });
+
+      client.close(); 
+    }
+  });
+
+  // res.write(JSON.stringify(db));  
 });
 
 app.get("*", (req, res) => {
