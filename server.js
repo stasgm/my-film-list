@@ -15,8 +15,7 @@ app.use(bodyParser.json());
 app.use(compression());
 
 const MongoClient = require("mongodb").MongoClient;
-const uri =
-  "mongodb+srv://Stanislau:WWk5m9yZLE2bjgK@stanislau1-ussxi.gcp.mongodb.net/test?retryWrites=true";
+const uri = "";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 client.connect(err => {
   console.log("connected!");
