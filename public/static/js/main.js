@@ -1,1 +1,0 @@
-const appDiv = document.getElementById('root'); 

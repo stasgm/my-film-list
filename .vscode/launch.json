@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Node.js - Debug Current File",
+      "type": "node",
+      "request": "launch",
+      "program": "${file}"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Launch URL Shortener",
+      "skipFiles": [
+          "<node_internals>/**"
+      ],
+      "program": "${workspaceFolder}/server/index.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug server Framework",
+      "args": ["${workspaceFolder}/src/main.ts"],
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "sourceMaps": true,
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector"
+    },
+    {
+      // Use this one if you're already running `yarn watch`
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Active Spec (no build)",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
+      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
+      "port": 9229,
+      "outputCapture": "std",
+      "skipFiles": ["<node_internals>/**/*.js"]
+      // "smartStep": true
+    }]
+}

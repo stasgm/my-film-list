@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "vsicons.presets.nestjs": true,
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/.git": true,
+    "**/node_modules": true,
+    ".vscode": true
+  },
+}
