@@ -1,15 +1,16 @@
 import { QueryClient, QueryClientProvider } from 'react-query'
 
-import FilmList from './FilmList';
-import '../styles/App.css';
+import FilmList from './Films';
+import Layout from './Layout';
 
 const queryClient = new QueryClient()
-
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <FilmList />
+      <Layout>
+        <FilmList />
+      </Layout>
     </QueryClientProvider>
   )
 }

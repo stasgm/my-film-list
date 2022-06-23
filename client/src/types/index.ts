@@ -3,3 +3,9 @@ export interface IFilm {
   name: string;
   url: string;
 }
+
+export enum StatusFilter {
+  all,
+  seen,
+  film,
+}
