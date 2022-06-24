@@ -1,13 +1,12 @@
 'use strict';
-// Перечисление зависимостей:
 import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import 'dotenv/config';
-import { MongoClient } from 'mongodb';
-// import db from "./db.json";
+import pkg from 'mongodb';
+const { MongoClient, ObjectId } = pkg;
 
 const app = express();
 
@@ -15,22 +14,24 @@ app.set('port', process.env.PORT || 3001);
 app.use(bodyParser.json());
 app.use(compression());
 
-const client = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
+const jsonParser = express.json();
+
+const mongoClient = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
 
 let db;
 
-client.connect((err) => {
-  if (err) {
-    console.log(err);
-  } else {
-    db = client.db('films');
-    console.log('connected!');
-  }
-});
+(async () => {
+  try {
+    await mongoClient.connect();
+    app.locals.collection = mongoClient.db('films').collection('list');
+    console.log('db is connected!');
 
-function isConnected() {
-  return !!client && !!client.topology && client.topology.isConnected();
-}
+    app.listen(3001);
+    console.log(`server is listening on ${app.get('port')}`);
+  } catch (err) {
+    if (err) return console.log(err);
+  }
+})();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -39,21 +40,92 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // API
-app.get('/api/list', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
+app.get('/api/films', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // perform actions on the collection object
-  (async () => {
-    const listCollection = await db.collection('list');
+  const collection = req.app.locals.collection;
 
-    const films = await listCollection.find({}).toArray();
-    // const allValues = await cursor.toArray();
+  try {
+    const films = await collection.find({}).toArray();
     const list = films.map((i) => {
-      return { name: i.name, url: i.url };
+      return {
+        id: i._id,
+        name: i.name,
+        url: i.url,
+        seen: i.seen,
+      };
     });
     res.send(list);
-  })();
+  } catch (err) {
+    return console.log(err);
+  }
+});
+
+app.get('/api/films/:id', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const collection = req.app.locals.collection;
+  try {
+    const id = ObjectId(req.params.id);
+    const film = await collection.findOne({ _id: id });
+    res.send(film);
+  } catch (err) {
+    console.log(err);
+    res.send({ error: err.message });
+  }
+});
+
+app.post('/api/films', jsonParser, async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  if (!req.body) return res.sendStatus(400);
+
+  const film = { name: req.body.name, url: req.body.url, seen: req.body.seen || false };
+  const collection = req.app.locals.collection;
+
+  try {
+    await collection.insertOne(film);
+    res.send(film);
+  } catch (err) {
+    console.log(err);
+    res.send({ error: err.message });
+  }
+});
+
+app.delete('/api/films/:id', async (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const collection = req.app.locals.collection;
+  try {
+    const id = ObjectId(req.params.id);
+    const result = await collection.findOneAndDelete({ _id: id });
+    const film = result.value;
+    res.send(film);
+  } catch (err) {
+    console.log(err);
+    res.send({ error: err });
+  }
+});
+
+app.put('/api/films/:id', jsonParser, async (req, res) => {
+  if (!req.body) return res.sendStatus(400);
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const collection = req.app.locals.collection;
+  try {
+    const id = ObjectId(req.params.id);
+    const result = await collection.findOneAndUpdate(
+      { _id: id },
+      { $set: { name: req.body.name, url: req.body.url, seen: req.body.seen } },
+      { returnDocument: 'after' },
+    );
+    const user = result.value;
+    res.send(user);
+  } catch (err) {
+    console.log(err);
+    res.send({ error: err });
+  }
 });
 
 // Handle GET requests to /api route
@@ -64,9 +136,6 @@ app.get('/api', (req, res) => {
 app.get('*', (req, res) => {
   res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 });
-// app.get("*", (req, res) => {
-//   res.sendFile(path.resolve(__dirname, "public", "index.html"));
-// });
 
 // error handling
 app.use(function (err, req, res, next) {
@@ -74,57 +143,8 @@ app.use(function (err, req, res, next) {
   res.status(500).send(err);
 });
 
-app.listen(app.get('port'), (err) => {
-  if (err) {
-    return console.log('something bad happened', err);
-  }
-  console.log(`server is listening on ${app.get('port')}`);
+process.on('SIGINT', async () => {
+  await mongoClient.close();
+  console.log('Application is closed');
+  process.exit();
 });
-
-function scrapeSelectBy() {
-  /*
-  return new Promise((resolve, reject) => {
-    let list = [];
-    const osmosis = require("osmosis");
-
-    osmosis.config(
-      "user_agent",
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36"
-    );
-    osmosis.config("tries", 1);
-    osmosis.config("concurrency", 2);
-
-    osmosis
-      .get("https://select.by/kurs/")
-      .find(".module-kurs_nbrb:first tr:gt(1)")
-      .set({
-        currency: "td[1]",
-        rate: "td[2]"
-      })
-      .data(data => {
-        if (data.currency > "" && data.rate > "") {
-          list.push(data);
-        }
-      })
-      .error(err => reject(err))
-      .done(() => resolve(list));
-  });
-  */
-}
-
-scrapeSelectBy();
-
-/* scrapeSelectBy().then(list => {
-  console.log('done!');
-  console.log(list);
-//  saveToJson(list);
-});
- */
-// function saveToJson(data) {
-//   var fs = require("fs");
-//   var json = JSON.stringify(data, null, 4);
-//   fs.writeFile("myjsonfile.json", json, "utf8", function(err) {
-//     if (err) throw err;
-//     console.log("complete");
-//   });
-// }
