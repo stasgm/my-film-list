@@ -8,10 +8,13 @@ export class CancelablePromise<PayloadType> extends Promise<PayloadType> {
 const fetchApi = {
   fetchFilms: async (): CancelablePromise<IFilm[]> => {
     const controller = new AbortController()
-
     const data: CancelablePromise<IFilm[]> = (async () => {
-      const { data } = await axios.get('/api/list');
-      return data;
+      try {
+        const { data } = await axios.get('/api/films');
+        return data;
+      } catch (err) {
+        return [{}];
+      }
     })();
 
     data.cancel = () => controller.abort()
@@ -19,8 +22,28 @@ const fetchApi = {
     return data;
   },
 
-  fetchFilm: async (): CancelablePromise<IFilm> => {
-    const { data } = await axios.get('/api/list/:id');
+  fetchFilm: async (id: string): CancelablePromise<IFilm> => {
+    const { data } = await axios.get(`/api/films/${id}`);
+    return data;
+  },
+
+  addFilm: async (film: IFilm): CancelablePromise<IFilm> => {
+    const { data } = await axios.post(`/api/films`, film);
+    return data;
+  },
+
+  updateFilm: async (id: string, film: IFilm): CancelablePromise<IFilm> => {
+    const { data } = await axios.put(`/api/films/${id}`, film);
+    return data;
+  },
+
+  updateStatus: async (id: string, status: boolean): CancelablePromise<IFilm> => {
+    const { data } = await axios.patch(`/api/films/${id}`, { seen: status });
+    return data;
+  },
+
+  deleteFilm: async (id: string): CancelablePromise<IFilm> => {
+    const { data } = await axios.delete(`/api/films/${id}`);
     return data;
   },
 }

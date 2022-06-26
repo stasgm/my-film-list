@@ -8,9 +8,9 @@
       "program": "${file}"
     },
     {
+      "name": "Launch Server",
       "type": "pwa-node",
       "request": "launch",
-      "name": "Launch URL Shortener",
       "skipFiles": [
           "<node_internals>/**"
       ],
@@ -23,8 +23,7 @@
       "args": ["${workspaceFolder}/src/main.ts"],
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "sourceMaps": true,
-      "cwd": "${workspaceRoot}",
-      "protocol": "inspector"
+      "cwd": "${workspaceRoot}"
     },
     {
       // Use this one if you're already running `yarn watch`
@@ -33,7 +32,6 @@
       "name": "Debug Active Spec (no build)",
       "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
       "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "port": 9229,
       "outputCapture": "std",
       "skipFiles": ["<node_internals>/**/*.js"]
       // "smartStep": true

@@ -2,7 +2,7 @@ import { ButtonHTMLAttributes, cloneElement, ReactElement } from "react"
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { active?: boolean }
 
-const Button = ({ active, ...htmlAttributes }: ButtonProps): JSX.Element => (
+export const Button = ({ active, ...htmlAttributes }: ButtonProps): JSX.Element => (
   <button tabIndex={active ? -1 : undefined} type="button" {...htmlAttributes} />
 )
 
@@ -26,8 +26,8 @@ const ButtonGroup = ({ children }: ButtonGroupProps): JSX.Element => {
             ${isMiddle ? "-ml-px" : ""}
             ${isLast ? "-ml-px  rounded-r-md" : ""}
             ${child.props.active
-              ? "z-10 bg-indigo-50 outline-none ring-1 ring-indigo-500 border-indigo-500 hover:bg-indigo-50"
-              : "bg-white hover:bg-gray-50"
+              ? "z-10 bg-indigo-50 outline-none ring-1 ring-indigo-500 border-indigo-500 hover:bg-indigo-150"
+              : "bg-white hover:bg-gray-200"
             }
           `,
           key: child.props.key || index,

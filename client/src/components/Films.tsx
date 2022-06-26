@@ -1,25 +1,29 @@
 import { useMemo, useState } from 'react';
-import { CheckIcon, SearchIcon, XIcon } from '@heroicons/react/solid';
+import { CheckIcon, XIcon } from '@heroicons/react/solid';
 import Highlighter from 'react-highlight-words';
-import ButtonGroup from './ButtonGroup';
 import Loader from './Loader';
 import Table from './Table';
-import { useFilms } from '../queries/queries';
+import { useFilms, useFilmMutations } from '../queries/queries';
 
 import '../styles/App.css';
-import { IFilm, StatusFilter } from '../types';
+import { IFilm, INewFilm, StatusFilter } from '../types';
+import SearchPanel from './SearchPanel';
+import EditFilm from './EditFilm';
 
-type FilterableFilm = IFilm & { lowerCaseTitle: string, completed: boolean };
+type FilterableFilm = IFilm & { lowerCaseTitle: string };
 
 const FilmList = () => {
   const films = useFilms();
+  const mutation = useFilmMutations();
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(StatusFilter.all);
 
+  const [selectedFilm, setSelctedFilm] = useState<IFilm | null | undefined>(null);
+
   const filterableData = useMemo(
     () =>
-      films.data?.map<FilterableFilm>(film => ({ ...film, lowerCaseTitle: film.name.toLowerCase(), completed: false })),
+      films.data?.map<FilterableFilm>(film => ({ ...film, lowerCaseTitle: film.name.toLowerCase() })),
     [films.data]
   );
 
@@ -31,9 +35,9 @@ const FilmList = () => {
     let filteredData = filterableData;
 
     if (statusFilter === StatusFilter.seen) {
-      filteredData = filteredData.filter(film => film.completed)
+      filteredData = filteredData.filter(film => film.seen)
     } else if (statusFilter === StatusFilter.film) {
-      filteredData = filteredData.filter(film => !film.completed)
+      filteredData = filteredData.filter(film => !film.seen)
     }
 
     const trimmedSearch = search.trim();
@@ -57,20 +61,25 @@ const FilmList = () => {
     return <Loader error={films.error} />
   }
 
-  const Seen = (value: boolean) =>
-    value ? (
+  const Seen = (value: boolean, row: FilterableFilm) => {
+    const onClick = () => mutation.updateFilmStatus.mutate({ id: row.id, newStatus: !row.seen });
+
+    const res = value ? (
       <>
         <CheckIcon className="h-5 w-5 text-green-500 inline" />Yes
       </>
     ) : (
       <>
-        <XIcon className="h-5 w-5 text-indigo-500 inline" />No
+        <XIcon className="h-5 w-5 text-indigo-500 inline" onClick={onClick} />No
       </>
-    )
+    );
+
+    return <span className="cursor-pointer" onClick={onClick}>{res}</span>;
+  }
 
   const Title = (value: string, row: FilterableFilm) => {
-    const isMatching = hasMatchingText(row)
-    return isMatching ? (
+    const isMatching = hasMatchingText(row);
+    const res = isMatching ? (
       <Highlighter
         autoEscape
         highlightClassName="font-bold text-black bg-yellow-300"
@@ -79,13 +88,30 @@ const FilmList = () => {
       />
     ) : (
       value
-    )
+    );
+    return <a href={row.url} target="_blank" rel="noreferrer" className="no-underline hover:underline">{res}</a>
+  };
+
+  const selectFilm = (id: string) => {
+    const film = films.data?.find(el => el.id === id);
+
+    setSelctedFilm(film);
+
+  };
+
+  const postFilm = (film: INewFilm) => {
+    console.log(`film: ${JSON.stringify(film)}`)
+  };
+
+  const Id = (value: string, row: FilterableFilm) => {
+    return <span className="no-underline hover:underline cursor-pointer" onClick={() => selectFilm(row.id)}>{value}</span>
   };
 
   const columns = [
     {
       key: "id",
       title: "#",
+      render: Id
     },
     {
       headClassName: "w-3/4",
@@ -103,62 +129,8 @@ const FilmList = () => {
 
   return (
     <>
-      <div className="bg-white sm:rounded-lg shadow overflow-hidden sm:mb-6 py-2">
-        <div className="my-2 whitespace-nowrap sm:inline">
-          <label
-            className="text-gray-600 ml-4 mr-4 font-semibold w-14 inline-block sm:w-auto sm:text-sm"
-            htmlFor="search"
-          >
-            Search
-          </label>
-          <div className="relative rounded-md shadow-sm inline-block">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <SearchIcon className="h-5 w-5 text-gray-400" />
-            </div>
-            <input
-              className="focus:ring-indigo-500 focus:border-indigo-500 block pl-10 sm:text-sm border-gray-300 rounded-md placeholder-gray-400 w-auto sm:w-48 md:w-64"
-              id="search"
-              placeholder="Keywords"
-              size={16}
-              type="search"
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="my-2 whitespace-nowrap sm:inline sm:ml-2 md:ml-4">
-          <label
-            className="text-gray-600 ml-4 mr-4 font-semibold w-14 inline-block sm:w-auto sm:text-sm"
-            htmlFor="search"
-          >
-            Status
-          </label>
-          <ButtonGroup>
-            {/* Buttons use two handlers here: onClick for keyboard navigation, and onMouseDown for UI reactivity  */}
-            <ButtonGroup.Button
-              active={statusFilter === StatusFilter.all}
-              onClick={() => setStatusFilter(StatusFilter.all)}
-              onMouseDown={() => setStatusFilter(StatusFilter.all)}
-            >
-              All
-            </ButtonGroup.Button>
-            <ButtonGroup.Button
-              active={statusFilter === StatusFilter.seen}
-              onClick={() => setStatusFilter(StatusFilter.seen)}
-              onMouseDown={() => setStatusFilter(StatusFilter.seen)}
-            >
-              Seen
-            </ButtonGroup.Button>
-            <ButtonGroup.Button
-              active={statusFilter === StatusFilter.film}
-              onClick={() => setStatusFilter(StatusFilter.film)}
-              onMouseDown={() => setStatusFilter(StatusFilter.film)}
-            >
-              To see
-            </ButtonGroup.Button>
-          </ButtonGroup>
-        </div>
-      </div>
-
+      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} />
+      <EditFilm postFilm={postFilm} film={selectedFilm} />
       <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
         <Table columns={columns} dataRows={filteredData} rowKey="id" />
         {(films.data?.length || 0) === 0 && (
@@ -170,20 +142,6 @@ const FilmList = () => {
       </div>
     </>
   )
-
-  // return (
-  //   <div className="app">
-  //     <header className="app-header">
-  //       <p>
-  //         Films: ({filmCount.data || 0})
-  //       </p>
-  //       <p>
-  //         {formattedList}
-  //       </p>
-  //       <></>
-  //     </header>
-  //   </div>
-  // )
 }
 
 export default FilmList;

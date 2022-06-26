@@ -68,7 +68,12 @@ app.get('/api/films/:id', async (req, res) => {
   try {
     const id = ObjectId(req.params.id);
     const film = await collection.findOne({ _id: id });
-    res.send(film);
+    res.send({
+      id: film._id,
+      name: film.name,
+      url: film.url,
+      seen: film.seen,
+    });
   } catch (err) {
     console.log(err);
     res.send({ error: err.message });
@@ -84,8 +89,14 @@ app.post('/api/films', jsonParser, async (req, res) => {
   const collection = req.app.locals.collection;
 
   try {
-    await collection.insertOne(film);
-    res.send(film);
+    const res = await collection.insertOne(film);
+    const film = result.value;
+    res.send({
+      id: film._id,
+      name: film.name,
+      url: film.url,
+      seen: film.seen,
+    });
   } catch (err) {
     console.log(err);
     res.send({ error: err.message });
@@ -100,7 +111,12 @@ app.delete('/api/films/:id', async (req, res) => {
     const id = ObjectId(req.params.id);
     const result = await collection.findOneAndDelete({ _id: id });
     const film = result.value;
-    res.send(film);
+    res.send({
+      id: film._id,
+      name: film.name,
+      url: film.url,
+      seen: film.seen,
+    });
   } catch (err) {
     console.log(err);
     res.send({ error: err });
@@ -120,8 +136,39 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
       { $set: { name: req.body.name, url: req.body.url, seen: req.body.seen } },
       { returnDocument: 'after' },
     );
-    const user = result.value;
-    res.send(user);
+    const film = result.value;
+    res.send({
+      id: film._id,
+      name: film.name,
+      url: film.url,
+      seen: film.seen,
+    });
+  } catch (err) {
+    console.log(err);
+    res.send({ error: err });
+  }
+});
+
+app.patch('/api/films/:id', jsonParser, async (req, res) => {
+  if (!req.body) return res.sendStatus(400);
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+
+  const collection = req.app.locals.collection;
+  try {
+    const id = ObjectId(req.params.id);
+    const result = await collection.findOneAndUpdate(
+      { _id: id },
+      { $set: { ...req.body } },
+      { returnDocument: 'after' },
+    );
+    const film = result.value;
+    res.send({
+      id: film._id,
+      name: film.name,
+      url: film.url,
+      seen: film.seen,
+    });
   } catch (err) {
     console.log(err);
     res.send({ error: err });
