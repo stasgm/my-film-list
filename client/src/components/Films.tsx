@@ -19,7 +19,7 @@ const FilmList = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(StatusFilter.all);
 
-  const [selectedFilm, setSelctedFilm] = useState<IFilm | null | undefined>(null);
+  const [selectedFilm, setSelctedFilm] = useState<IFilm | undefined>();
 
   const filterableData = useMemo(
     () =>
@@ -62,7 +62,7 @@ const FilmList = () => {
   }
 
   const Seen = (value: boolean, row: FilterableFilm) => {
-    const onClick = () => mutation.updateFilmStatus.mutate({ id: row.id, newStatus: !row.seen });
+    const onClick = () => mutation.updateFilmStatus.mutate({ id: row.id, status: !row.seen });
 
     const res = value ? (
       <>
@@ -96,11 +96,24 @@ const FilmList = () => {
     const film = films.data?.find(el => el.id === id);
 
     setSelctedFilm(film);
-
   };
 
-  const postFilm = (film: INewFilm) => {
-    console.log(`film: ${JSON.stringify(film)}`)
+  function isFilm(film: INewFilm | IFilm): film is IFilm {
+    return (film as IFilm).id !== undefined;
+  }
+
+  const postFilm = (film: INewFilm | IFilm) => {
+    if (isFilm(film)) {
+      mutation.updateFilm.mutate(film);
+    } else {
+      mutation.addFilm.mutate(film);
+    }
+    setSelctedFilm(undefined);
+  };
+
+  const deleteFilm = (id: string) => {
+    mutation.deleteFilm.mutate(id);
+    setSelctedFilm(undefined);
   };
 
   const Id = (value: string, row: FilterableFilm) => {
@@ -130,9 +143,14 @@ const FilmList = () => {
   return (
     <>
       <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} />
-      <EditFilm postFilm={postFilm} film={selectedFilm} />
+      <EditFilm
+        onPostFilm={postFilm}
+        film={selectedFilm}
+        onUnselectedFilm={() => setSelctedFilm(undefined)}
+        onDeleteFilm={deleteFilm}
+      />
       <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
-        <Table columns={columns} dataRows={filteredData} rowKey="id" />
+        <Table columns={columns} dataRows={filteredData} rowKey="id" selected={selectedFilm?.id} />
         {(films.data?.length || 0) === 0 && (
           <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
         )}

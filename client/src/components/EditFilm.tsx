@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon, ExternalLinkIcon, CloudUploadIcon } from '@heroicons/react/outline';
 import { Button } from './ButtonGroup';
 import { IFilm, INewFilm } from '../types';
 
-
 interface IProps {
   film?: IFilm | null;
-  postFilm: (film: INewFilm) => void;
+  onPostFilm: (film: INewFilm) => void;
+  onUnselectedFilm: () => void;
+  onDeleteFilm: (id: string) => void;
 }
 
 const initialState: INewFilm = {
@@ -14,7 +15,7 @@ const initialState: INewFilm = {
   url: ''
 }
 
-const EditFilm = ({ postFilm, film }: IProps) => {
+const EditFilm = ({ onPostFilm, onUnselectedFilm, onDeleteFilm, film }: IProps) => {
   useEffect(() => {
     setFilm(film || initialState);
   }, [film])
@@ -35,7 +36,7 @@ const EditFilm = ({ postFilm, film }: IProps) => {
             <InformationCircleIcon className="h-5 w-5 text-gray-400" />
           </div>
           <input
-            className="focus:ring-indigo-500 focus:border-indigo-500 block pl-10 sm:text-sm border-gray-300 rounded-md placeholder-gray-400 w-auto sm:w-48 md:w-96"
+            className="focus:ring-indigo-500 focus:border-indigo-500 block pl-10 sm:text-sm border-gray-300 rounded-md placeholder-gray-400 w-auto sm:w-48 md:w-72"
             id="name"
             placeholder="Name"
             size={16}
@@ -69,16 +70,26 @@ const EditFilm = ({ postFilm, film }: IProps) => {
       </div>
       <div className="my-2 whitespace-nowrap sm:inline sm:ml-2 md:ml-4">
         <Button
-          className="px-4 py-2 border mr-2 border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-200"
-          onClick={() => postFilm(tempFilm)}
+          className="px-4 py-2 border mr-2 border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-200 inline-flex"
+          onClick={() => onPostFilm(tempFilm)}
         >
+          <CloudUploadIcon className="h-5 w-5" />
           Post
         </Button>
         <Button
-          className="px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-200"
-          onClick={() => setFilm(initialState)}
+          className="px-4 py-2 border mr-2 border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-200 inline-flex"
+          onClick={onUnselectedFilm}
         >
+          <CloudUploadIcon className="h-5 w-5" />
           Clear
+        </Button>
+        <Button
+          className={`px-4 py-2 border mr-2 border-gray-300 text-sm font-medium text-gray-700 rounded-lg inline-flex ${!film?.id ? "bg-gray-300" : "hover:bg-gray-200"}`}
+          onClick={() => film?.id ? onDeleteFilm(film.id) : null}
+          disabled={!film?.id}
+        >
+          <CloudUploadIcon className="h-5 w-5" />
+          Delete
         </Button>
       </div>
     </div>

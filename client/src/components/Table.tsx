@@ -13,9 +13,10 @@ type Props = {
   columns: Column[]
   dataRows: dataRow[]
   rowKey?: string
+  selected?: string;
 }
 
-const Table = ({ columns, dataRows, rowKey = "key" }: Props): JSX.Element => {
+const Table = ({ columns, dataRows, rowKey = "key", selected }: Props): JSX.Element => {
   return (
     <table className="min-w-full divide-y divide-gray-200 table-fixed">
       <thead className="bg-gray-50">
@@ -34,7 +35,7 @@ const Table = ({ columns, dataRows, rowKey = "key" }: Props): JSX.Element => {
       </thead>
       <tbody>
         {dataRows.map(row => (
-          <tr key={row[rowKey]} className="bg-white">
+          <tr key={row[rowKey]} className={row.id === selected ? 'bg-gray-200' : 'bg-white'}>
             {columns.map((col, index) => (
               <td key={col.key} className="px-6 py-4 text-sm text-gray-500">
                 {col.render ? col.render(row[col.key], row, index) : row[col.key]}

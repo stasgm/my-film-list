@@ -85,17 +85,14 @@ app.post('/api/films', jsonParser, async (req, res) => {
 
   if (!req.body) return res.sendStatus(400);
 
-  const film = { name: req.body.name, url: req.body.url, seen: req.body.seen || false };
   const collection = req.app.locals.collection;
+  const newFilm = { name: req.body.name, url: req.body.url, seen: req.body.seen || false };
 
   try {
-    const res = await collection.insertOne(film);
-    const film = result.value;
+    const result = await collection.insertOne(newFilm);
     res.send({
-      id: film._id,
-      name: film.name,
-      url: film.url,
-      seen: film.seen,
+      id: result.insertedId,
+      ...newFilm,
     });
   } catch (err) {
     console.log(err);

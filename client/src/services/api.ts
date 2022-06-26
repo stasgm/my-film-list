@@ -1,5 +1,5 @@
 import axios from "axios";
-import { IFilm } from "../types";
+import { IFilm, INewFilm, INewFilmState } from "../types";
 
 export class CancelablePromise<PayloadType> extends Promise<PayloadType> {
   public cancel?: () => void
@@ -27,18 +27,18 @@ const fetchApi = {
     return data;
   },
 
-  addFilm: async (film: IFilm): CancelablePromise<IFilm> => {
+  addFilm: async (film: INewFilm): CancelablePromise<IFilm> => {
     const { data } = await axios.post(`/api/films`, film);
     return data;
   },
 
-  updateFilm: async (id: string, film: IFilm): CancelablePromise<IFilm> => {
-    const { data } = await axios.put(`/api/films/${id}`, film);
+  updateFilm: async (film: IFilm): CancelablePromise<IFilm> => {
+    const { data } = await axios.put(`/api/films/${film.id}`, film);
     return data;
   },
 
-  updateStatus: async (id: string, status: boolean): CancelablePromise<IFilm> => {
-    const { data } = await axios.patch(`/api/films/${id}`, { seen: status });
+  updateStatus: async (filmState: INewFilmState): CancelablePromise<IFilm> => {
+    const { data } = await axios.patch(`/api/films/${filmState.id}`, { seen: filmState.status });
     return data;
   },
 

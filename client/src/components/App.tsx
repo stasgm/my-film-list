@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from 'react-query'
-
+import { ReactQueryDevtools } from "react-query/devtools";
 import FilmList from './Films';
 import Layout from './Layout';
 
@@ -11,6 +11,7 @@ export default function App() {
       <Layout>
         <FilmList />
       </Layout>
+      <ReactQueryDevtools initialIsOpen />
     </QueryClientProvider>
   )
 }
