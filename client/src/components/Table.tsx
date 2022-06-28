@@ -19,7 +19,7 @@ type Props = {
 const Table = ({ columns, dataRows, rowKey = "key", selected }: Props): JSX.Element => {
   return (
     <table className="min-w-full divide-y divide-gray-200 table-fixed">
-      <thead className="bg-gray-50">
+      <thead className="bg-gray-200">
         <tr>
           {columns.map(col => (
             <th
@@ -35,9 +35,9 @@ const Table = ({ columns, dataRows, rowKey = "key", selected }: Props): JSX.Elem
       </thead>
       <tbody>
         {dataRows.map(row => (
-          <tr key={row[rowKey]} className={row.id === selected ? 'bg-gray-200' : 'bg-white'}>
+          <tr key={row[rowKey]} className={`border-b hover:bg-gray-100 ${row.id === selected ? 'bg-green-50' : 'bg-white'}`}>
             {columns.map((col, index) => (
-              <td key={col.key} className="px-6 py-4 text-sm text-gray-500">
+              <td key={col.key} className="px-6 py-2 text-sm text-gray-500">
                 {col.render ? col.render(row[col.key], row, index) : row[col.key]}
               </td>
             ))}

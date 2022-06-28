@@ -13,7 +13,7 @@ const fetchApi = {
         const { data } = await axios.get('/api/films');
         return data;
       } catch (err) {
-        return [{}];
+        return [];
       }
     })();
 
