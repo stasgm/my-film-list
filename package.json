@@ -13,7 +13,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "client:start": "cd client && yarn start",
-    "build": "cd client && yarn build",
+    "build": "cd client && yarn install && yarn build",
     "server:start": "node server/index.js",
     "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js localhost 3001",
     "start:dev": "cross-env dotenv -e .env.local yarn server:start",
