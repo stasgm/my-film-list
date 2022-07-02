@@ -7,14 +7,23 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "client": "cd client && yarn start",
-    "build": "cd client && yarn build",
-    "start": "node server/index.js",
-    "dev": "nodemon server/index.js localhost 3001"
+    "client:start": "cd client && yarn start",
+    "client:build": "cd client && yarn build",
+    "server:start": "node server/index.js",
+    "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js localhost 3001",
+    "start:dev": "cross-env dotenv -e .env.local yarn server:start",
+    "start:dev-h": "cross-env dotenv -e .env.local-h yarn server:start",
+    "start:prod": "cross-env yarn server:start",
+    "lint": "eslint \"{src,apps,client,test}/**/*.ts\"",
+    "lint:fix": "eslint --fix \"{src,apps,client,test}/**/*.ts\"",
+    "prettier:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prettier:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
   },
   "dependencies": {
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",
+    "cross-env": "^7.0.3",
+    "dotenv-cli": "^5.1.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "http-proxy-middleware": "^2.0.6",
@@ -22,6 +31,13 @@
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.6",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.18",
+    "prettier": "^2.7.1",
+    "eslint": "^8.19.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-promise": "^6.0.0"
   }
 }

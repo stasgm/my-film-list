@@ -16,9 +16,8 @@ app.use(compression());
 
 const jsonParser = express.json();
 
+console.log(`process.env.MONGO_URI: ${JSON.stringify(process.env.MONGO_URI)}`);
 const mongoClient = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
-
-let db;
 
 (async () => {
   try {

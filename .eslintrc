@@ -1,7 +1,16 @@
 {
   "root": true,
-  "extends": "airbnb",
-  "plugins": ["react"],
+  "extends": [
+    "airbnb",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "plugin:promise/recommended",
+    "plugin:sonarjs/recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript"
+  ],
+  "plugins": ["react", "@typescript-eslint/eslint-plugin", "import", "promise", "sonarjs"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
@@ -10,9 +19,10 @@
     }
   },
   "env": {
-      "es6": true,
-      "browser": true
+    "es6": true,
+    "browser": true
   },
+
   "parser": "babel-eslint",
   "rules": {
     "strict": 0,
@@ -21,6 +31,10 @@
     "indent": ["error", 4],
     "react/jsx-indent": [2, 4],
     "react/jsx-indent-props": [2, 4],
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }
