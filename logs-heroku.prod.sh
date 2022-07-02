@@ -1,1 +1,1 @@
-heroku logs --remote h-prod --tail
+heroku logs --remote heroku --tail

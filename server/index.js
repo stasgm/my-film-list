@@ -10,14 +10,16 @@ const { MongoClient, ObjectId } = pkg;
 
 const app = express();
 
-app.set('port', process.env.PORT || 3001);
+app.set('port', process.env.PORT || 3030);
 app.use(bodyParser.json());
 app.use(compression());
 
 const jsonParser = express.json();
 
 console.log(`process.env.MONGO_URI: ${JSON.stringify(process.env.MONGO_URI)}`);
-const mongoClient = new MongoClient(process.env.MONGO_URI, { useNewUrlParser: true });
+const mongoClient = new MongoClient(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+});
 
 (async () => {
   try {
@@ -85,7 +87,11 @@ app.post('/api/films', jsonParser, async (req, res) => {
   if (!req.body) return res.sendStatus(400);
 
   const collection = req.app.locals.collection;
-  const newFilm = { name: req.body.name, url: req.body.url, seen: req.body.seen || false };
+  const newFilm = {
+    name: req.body.name,
+    url: req.body.url,
+    seen: req.body.seen || false,
+  };
 
   try {
     const result = await collection.insertOne(newFilm);
@@ -130,7 +136,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
     const result = await collection.findOneAndUpdate(
       { _id: id },
       { $set: { name: req.body.name, url: req.body.url, seen: req.body.seen } },
-      { returnDocument: 'after' },
+      { returnDocument: 'after' }
     );
     const film = result.value;
     res.send({
@@ -156,7 +162,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
     const result = await collection.findOneAndUpdate(
       { _id: id },
       { $set: { ...req.body } },
-      { returnDocument: 'after' },
+      { returnDocument: 'after' }
     );
     const film = result.value;
     res.send({

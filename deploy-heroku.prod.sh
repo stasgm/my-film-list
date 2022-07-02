@@ -1,1 +1,1 @@
-git push -f h-prod HEAD:master
+git push -f heroku HEAD:master
