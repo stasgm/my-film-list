@@ -16,7 +16,6 @@ app.use(compression());
 
 const jsonParser = express.json();
 
-console.log(`process.env.MONGO_URI: ${JSON.stringify(process.env.MONGO_URI)}`);
 const mongoClient = new MongoClient(process.env.MONGO_URI, {
   useNewUrlParser: true,
 });
@@ -27,7 +26,7 @@ const mongoClient = new MongoClient(process.env.MONGO_URI, {
     app.locals.collection = mongoClient.db('films').collection('list');
     console.log('db is connected!');
 
-    app.listen(3001);
+    app.listen(process.env.PORT || 3030);
     console.log(`server is listening on ${app.get('port')}`);
   } catch (err) {
     if (err) return console.log(err);
@@ -136,7 +135,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
     const result = await collection.findOneAndUpdate(
       { _id: id },
       { $set: { name: req.body.name, url: req.body.url, seen: req.body.seen } },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
     );
     const film = result.value;
     res.send({
@@ -162,7 +161,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
     const result = await collection.findOneAndUpdate(
       { _id: id },
       { $set: { ...req.body } },
-      { returnDocument: 'after' }
+      { returnDocument: 'after' },
     );
     const film = result.value;
     res.send({
