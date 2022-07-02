@@ -16,6 +16,7 @@
   - [ ] type (serial\film). Add to filters
   - [ ] last serial episode
 - [ ]  add details page for film information (links, description)
+- [ ]  when click the 'edit' button highlight it and undo action on the next click  
 
 ## Deployment
 
