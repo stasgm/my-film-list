@@ -24,8 +24,7 @@ const Table = ({ columns, dataRows, rowKey = "key", selected }: Props): JSX.Elem
           {columns.map(col => (
             <th
               key={col.key}
-              className={`px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider ${col.headClassName || ""
-                }`}
+              className={`px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider ${col.headClassName || ""}`}
               scope="col"
             >
               {col.title}

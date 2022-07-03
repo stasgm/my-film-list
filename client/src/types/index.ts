@@ -14,5 +14,5 @@ export interface INewFilmState { id: string, status: boolean };
 export enum StatusFilter {
   all,
   seen,
-  film,
+  toSee,
 }

@@ -58,9 +58,9 @@ const SearchPanel = ({ statusFilter, setStatusFilter, setSearch }: IProps) => {
             Seen
           </ButtonGroup.Button>
           <ButtonGroup.Button
-            active={statusFilter === StatusFilter.film}
-            onClick={() => setStatusFilter(StatusFilter.film)}
-            onMouseDown={() => setStatusFilter(StatusFilter.film)}
+            active={statusFilter === StatusFilter.toSee}
+            onClick={() => setStatusFilter(StatusFilter.toSee)}
+            onMouseDown={() => setStatusFilter(StatusFilter.toSee)}
           >
             To see
           </ButtonGroup.Button>
