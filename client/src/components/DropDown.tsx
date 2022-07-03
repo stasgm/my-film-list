@@ -1,107 +1,137 @@
-// import React from "react";
-// import { createPopper } from "@popperjs/core";
+/* eslint-disable jsx-a11y/anchor-is-valid */
+import { Fragment, useState } from 'react'
+import { Menu, Transition } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/solid'
 
-// const Dropdown = ({ color }) => {
-//   // dropdown props
-//   const [dropdownPopoverShow, setDropdownPopoverShow] = React.useState(false);
-//   const btnDropdownRef = React.createRef();
-//   const popoverDropdownRef = React.createRef();
-//   const openDropdownPopover = () => {
-//     createPopper(btnDropdownRef.current, popoverDropdownRef.current, {
-//       placement: "bottom-start"
-//     });
-//     setDropdownPopoverShow(true);
-//   };
-//   const closeDropdownPopover = () => {
-//     setDropdownPopoverShow(false);
-//   };
-//   // bg colors
-//   let bgColor;
-//   color === "white"
-//     ? (bgColor = "bg-slate-700")
-//     : (bgColor = "bg-" + color + "-500");
-//   return (
-//     <>
-//       <div className="flex flex-wrap">
-//         <div className="w-full sm:w-6/12 md:w-4/12 px-4">
-//           <div className="relative inline-flex align-middle w-full">
-//             <button
-//               className={
-//                 "text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150 " +
-//                 bgColor
-//               }
-//               type="button"
-//               ref={btnDropdownRef}
-//               onClick={() => {
-//                 dropdownPopoverShow
-//                   ? closeDropdownPopover()
-//                   : openDropdownPopover();
-//               }}
-//             >
-//               {color === "white" ? "White Dropdown" : color + " Dropdown"}
-//             </button>
-//             <div
-//               ref={popoverDropdownRef}
-//               className={
-//                 (dropdownPopoverShow ? "block " : "hidden ") +
-//                 (color === "white" ? "bg-white " : bgColor + " ") +
-//                 "text-base z-50 float-left py-2 list-none text-left rounded shadow-lg mt-1"
-//               }
-//               style={{ minWidth: "12rem" }}
-//             >
-//               <a
-//                 href="#pablo"
-//                 className={
-//                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-//                   (color === "white" ? " text-slate-700" : "text-white")
-//                 }
-//                 onClick={e => e.preventDefault()}
-//               >
-//                 Action
-//               </a>
-//               <a
-//                 href="#pablo"
-//                 className={
-//                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-//                   (color === "white" ? " text-slate-700" : "text-white")
-//                 }
-//                 onClick={e => e.preventDefault()}
-//               >
-//                 Another action
-//               </a>
-//               <a
-//                 href="#pablo"
-//                 className={
-//                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-//                   (color === "white" ? " text-slate-700" : "text-white")
-//                 }
-//                 onClick={e => e.preventDefault()}
-//               >
-//                 Something else here
-//               </a>
-//               <div className="h-0 my-2 border border-solid border-t-0 border-slate-800 opacity-25" />
-//               <a
-//                 href="#pablo"
-//                 className={
-//                   "text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent " +
-//                   (color === "white" ? " text-slate-700" : "text-white")
-//                 }
-//                 onClick={e => e.preventDefault()}
-//               >
-//                 Seprated link
-//               </a>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// };
+function classNames(...classes: string[]) {
+  return classes.filter(Boolean).join(' ')
+}
 
-// export default function DropdownRender() {
-//   return (
-//     <>
-//       <Dropdown color="white" />
-//     </>
-//   );
-// }
+const DropDownMenu = () => {
+  const [open, setOpen] = useState(true);
+
+  return (
+    <Menu as="div" className="relative inline-block text-left">
+      <div>
+        <Menu.Button className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500">
+          Options
+          <ChevronDownIcon className="-mr-1 ml-2 h-5 w-5" aria-hidden="true" onClick={() => setOpen(!open)} />
+        </Menu.Button>
+      </div>
+
+      <Transition
+        as={Fragment}
+        enter="transition ease-out duration-100"
+        enterFrom="transform opacity-0 scale-95"
+        enterTo="transform opacity-100 scale-100"
+        leave="transition ease-in duration-75"
+        leaveFrom="transform opacity-100 scale-100"
+        leaveTo="transform opacity-0 scale-95"
+      >
+        <Menu.Items className="z-auto origin-top-right absolute right-1 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none">
+          <div className="py-1">
+            <Menu.Item>
+              {({ active }: { active: boolean }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Edit
+                </a>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Duplicate
+                </a>
+              )}
+            </Menu.Item>
+          </div>
+          <div className="py-1">
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Archive
+                </a>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Move
+                </a>
+              )}
+            </Menu.Item>
+          </div>
+          <div className="py-1">
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Share
+                </a>
+              )}
+            </Menu.Item>
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Add to favorites
+                </a>
+              )}
+            </Menu.Item>
+          </div>
+          <div className="py-1">
+            <Menu.Item>
+              {({ active }) => (
+                <a
+                  href="#"
+                  className={classNames(
+                    active ? 'bg-gray-100 text-gray-900' : 'text-gray-700',
+                    'block px-4 py-2 text-sm'
+                  )}
+                >
+                  Delete
+                </a>
+              )}
+            </Menu.Item>
+          </div>
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  )
+}
+
+export default DropDownMenu;

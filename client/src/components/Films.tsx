@@ -97,8 +97,8 @@ const FilmList = () => {
 
   const handleDeleteFilm = (id: string) => {
     setModal({
-      title: "Attention",
-      message: "Do you want to delete the film?",
+      title: "Delete film",
+      message: "Are you sure you want to delete this film?",
       onOk: () => {
         mutation.deleteFilm.mutate(id);
         selectedFilm && setSelctedFilm(null);
