@@ -16,7 +16,12 @@
   - [ ] type (serial\film). Add to filters
   - [ ] last serial episode
 - [ ]  add details page for film information (links, description)
-- [ ]  when click the 'edit' button highlight it and undo action on the next click  
+- [ ]  add filter by genres (select multiple options)
+- [ ]  add filter by type
+- [ ]  filters save in local storage
+- [ ]  for mobiles hide action buttons and show menu button with popup actions
+- [ ]  add sticky headers
+- [ ]  add creation date time  and sort by date\time
 
 ## Deployment
 

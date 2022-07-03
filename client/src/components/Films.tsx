@@ -1,29 +1,28 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { FilmIcon } from '@heroicons/react/solid';
 import Highlighter from 'react-highlight-words';
 import Loader from './Loader';
 import Table from './Table';
 import { useFilms, useFilmMutations } from '../queries/queries';
+import { useModal } from './Modal';
+
+import { IFilm, StatusFilter } from '../types';
+import SearchPanel from './SearchPanel';
+import ActionButton from './ActionButton';
+import FilmDialog from './FilmDialog';
 
 import '../styles/App.css';
-import { IFilm, INewFilm, StatusFilter } from '../types';
-import SearchPanel from './SearchPanel';
-import EditFilm from './EditFilm';
-import ActionButton from './ActionButton';
-import { useModal } from './Modal';
 
 type FilterableFilm = IFilm & { lowerCaseTitle: string };
 
 const FilmList = () => {
-  const { setModal } = useModal();
+  const { openModal, closeModal } = useModal();
 
   const films = useFilms();
   const mutation = useFilmMutations();
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState(StatusFilter.toSee);
-
-  const [selectedFilm, setSelctedFilm] = useState<IFilm | null>(null);
+  const [statusFilter, setStatusFilter] = useState(StatusFilter.watch);
 
   const filterableData = useMemo(
     () =>
@@ -40,12 +39,11 @@ const FilmList = () => {
 
     if (statusFilter === StatusFilter.seen) {
       filteredData = filteredData.filter(film => film.seen)
-    } else if (statusFilter === StatusFilter.toSee) {
+    } else if (statusFilter === StatusFilter.watch) {
       filteredData = filteredData.filter(film => !film.seen)
     }
 
     const trimmedSearch = search.trim();
-
     const searchTokens = trimmedSearch.toLowerCase().split(/\s+/);
 
     const hasMatchingText = (film: FilterableFilm) => {
@@ -61,66 +59,32 @@ const FilmList = () => {
     return { filteredData, hasMatchingText, searchTokens }
   }, [filterableData, search, statusFilter])
 
-  if (films.isError || !filteredData || !hasMatchingText) {
-    return <Loader error={films.error} />
-  }
+  const handleEditFilm = useCallback((id: string) => {
+    const filmEdit = films.data?.find(el => el.id === id);
 
-  const isFilm = (film: INewFilm | IFilm): film is IFilm => {
-    return (film as IFilm).id !== undefined;
-  }
-
-  const postFilm = (film: INewFilm | IFilm) => {
-    if (isFilm(film)) {
-      mutation.updateFilm.mutate(film);
-    } else {
-      mutation.addFilm.mutate(film);
+    if (!filmEdit) {
+      return;
     }
-    setSelctedFilm(null);
-  };
 
-  const selectFilm = (id: string | null) => {
-    setModal({
-      content: <EditFilm
-        onPostFilm={postFilm}
-        film={selectedFilm}
-        onUnselectedFilm={() => setSelctedFilm(null)}
-        onDeleteFilm={handleDeleteFilm}
-      />,
-      onOk: () => { console.log("save") }
+    openModal({
+      title: "Edit film",
+      component: <FilmDialog film={filmEdit} onClose={closeModal} />,
     });
+  }, [closeModal, films.data, openModal]);
 
-    const film = films.data?.find(el => el.id === id);
-
-    setSelctedFilm(film || null);
-  };
-
-
-  const handleAddFilm = () => {
-    setModal({
-      content: <EditFilm
-        onPostFilm={postFilm}
-        film={selectedFilm}
-        onUnselectedFilm={() => setSelctedFilm(null)}
-        onDeleteFilm={handleDeleteFilm}
-      />,
-      onOk: () => { console.log("save") }
-    });
-
-    // const film = films.data?.find(el => el.id === id);
-
-    // setSelctedFilm(film || null);
-  };
-
-  const handleDeleteFilm = (id: string) => {
-    setModal({
+  const handleDeleteFilm = useCallback((id: string) => {
+    openModal({
       title: "Delete film",
       message: "Are you sure you want to delete this film?",
       onOk: () => {
         mutation.deleteFilm.mutate(id);
-        selectedFilm && setSelctedFilm(null);
       }
     });
-  };
+  }, [mutation.deleteFilm, openModal]);
+
+  if (films.isError || !filteredData || !hasMatchingText) {
+    return <Loader error={films.error} />
+  }
 
   const Title = (value: string, row: FilterableFilm) => {
     const isMatching = hasMatchingText(row);
@@ -153,7 +117,7 @@ const FilmList = () => {
               <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
             )}
         </ActionButton>
-        <ActionButton onClick={() => selectFilm((selectedFilm?.id === row.id) ? null : row.id)} active={selectedFilm?.id === row.id}>
+        <ActionButton onClick={() => handleEditFilm(row.id)} >
           <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </ActionButton>
         <ActionButton onClick={() => handleDeleteFilm(row.id)}>
@@ -175,36 +139,31 @@ const FilmList = () => {
 
   const columns = [
     {
-      headClassName: "w-2/6",
+      headClassName: "sm:w-2/6 w-5/6",
       key: "name",
       render: Title,
       title: "Title",
     },
     {
-      headClassName: "w-3/6",
+      headClassName: "sm:w-3/6 hidden sm:table-cell",
       key: "url",
       render: URLcomponent,
       title: "URL",
     },
     {
-      headClassName: "w-2/6 text-center",
+      headClassName: "sm:w-1/6 w-1/6 text-center",
       key: "id",
       render: Actions,
       title: "Actions",
     },
   ];
 
+
   return (
     <>
-      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} onAddFilm={handleAddFilm} />
-      {/* <EditFilm
-        onPostFilm={postFilm}
-        film={selectedFilm}
-        onUnselectedFilm={() => setSelctedFilm(null)}
-        onDeleteFilm={handleDeleteFilm}
-      /> */}
+      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} />
       <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
-        <Table columns={columns} dataRows={filteredData} rowKey="id" selected={selectedFilm?.id} />
+        <Table columns={columns} dataRows={filteredData} rowKey="id" />
         {(films.data?.length || 0) === 0 && (
           <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
         )}

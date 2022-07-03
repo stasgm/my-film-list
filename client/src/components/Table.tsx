@@ -36,7 +36,7 @@ const Table = ({ columns, dataRows, rowKey = "key", selected }: Props): JSX.Elem
         {dataRows.map(row => (
           <tr key={row[rowKey]} className={`border-b hover:bg-gray-100 ${row.id === selected ? 'bg-green-50' : 'bg-white'}`}>
             {columns.map((col, index) => (
-              <td key={col.key} className="px-6 py-2 text-sm text-gray-500">
+              <td key={col.key} className={`px-6 py-2 text-sm text-gray-500 ${col.headClassName || ""}`}>
                 {col.render ? col.render(row[col.key], row, index) : row[col.key]}
               </td>
             ))}

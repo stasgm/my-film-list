@@ -1,42 +1,21 @@
-import { ReactNode, useState } from "react"
-import { useFilmMutations, useFilmsCount } from "../queries/queries";
-import { IFilm, INewFilm } from "../types";
-import { Button } from "./ButtonGroup";
+import { ReactNode, useCallback } from "react"
+import { useFilmsCount } from "../queries/queries";
 import FilmDialog from "./FilmDialog";
+import { Button } from "./ButtonGroup";
 import { useModal } from "./Modal";
 
 type Props = { children: ReactNode }
 
 const Layout = ({ children }: Props) => {
   const filmCount = useFilmsCount();
-  const { setModal } = useModal();
-  const mutation = useFilmMutations();
+  const { openModal, closeModal } = useModal();
 
-  const initialState: IFilm = {
-    id: "",
-    seen: false,
-    name: '',
-    url: '',
-  };
-
-  const [film, setFilm] = useState<IFilm>(initialState);
-
-  const handlePostFilm = () => {
-
-  };
-
-  const handleAddFilm = () => {
-    setModal({
+  const handleOpenAddFilmDialog = useCallback(() => {
+    openModal({
       title: "New film",
-      content: <FilmDialog film={film} setFilm={setFilm} />,
-      onOk: handlePostFilm
+      component: <FilmDialog onClose={closeModal} />,
     });
-
-    // const film = films.data?.find(el => el.id === id);
-
-    // setSelctedFilm(film || null);
-  };
-
+  }, [closeModal, openModal]);
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -45,12 +24,11 @@ const Layout = ({ children }: Props) => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex place-content-between">
             <h1 className="text-xl sm:text-4xl font-bold text-white">{`Films: ${filmCount.data} total in base`}</h1>
             <Button
-              className="px-2 py-0 border border-gray-300 text-sm  font-medium text-gray-700 rounded-lg hover:bg-gray-200 bg-gray-100"
-              onClick={handleAddFilm}
+              className="px-2 py-0 border border-gray-300 text-sm font-medium text-gray-900 rounded-lg hover:bg-gray-200 bg-gray-100"
+              onClick={handleOpenAddFilmDialog}
             >
               Add new film
             </Button>
-            {/* </div> */}
           </div>
         </header>
       </div >

@@ -1,10 +1,15 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button } from "./ButtonGroup";
 
+
+interface ChildProps {
+  handleClose: () => void;
+}
+
 interface IModalProps {
   title?: string;
   message?: string;
-  children?: React.ReactElement;
+  children?: React.ReactElement<ChildProps>;
   onCancel: () => void;
   onOk: () => void;
 };
@@ -44,7 +49,7 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
             {/*header*/}
             <div className="bg-white px-4 pt-6 pb-4 sm:p-4 sm:pb-4 sm:pt-6 rounded-t">
               <div className="text-center sm:mt-0 sm:text-left">
-                <h3 className="text-lg leading-6 font-medium text-gray-900">{title || "Alert"}</h3>
+                <h3 className="text-lg leading-6 font-semibold uppercase text-gray-900">{title || "Alert"}</h3>
                 {/* </div> */}
                 {message && (
                   <div className="mt-2">
@@ -52,35 +57,24 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
                   </div>)}
               </div>
             </div>
-            {/* body  */}
-            {children}
+            {/* body */}
             {/*footer*/}
-            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b border-slate-200">
-              <Button
-                className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-emerald-500 font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-white text-base font-medium text-gray-700 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-20 sm:text-sm mt-3"
-                onClick={onOk}
-              >
-                Ok
-              </Button>
-              {/* <Button
-                className="text-red-500 font-bold uppercase px-6 py-3 rounded text-sm outline-none hover:bg-gray-100 focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                onClick={onCancel}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded hover:bg-emerald-600 outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                onClick={onOk}
-              >
-                Ok
-              </Button> */}
-            </div>
+            {children ? children : (
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row justify-end rounded-b border-slate-200">
+                <Button
+                  className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-500 text-base font-medium text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-20 sm:text-sm"
+                  onClick={onOk}
+                >
+                  Ok
+                </Button>
+                <Button
+                  className="font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-white text-base font-medium text-gray-700 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm mt-3"
+                  onClick={onCancel}
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -90,19 +84,21 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
 };
 
 interface IState {
-  content?: React.ReactElement;
+  component?: React.ReactElement<ChildProps>;
   title?: string;
   message?: string;
-  onOk?: () => void;
+  onOk?: (value?: any) => void;
   onCancel?: () => void;
 }
 
 interface IModalContext {
-  setModal: React.Dispatch<React.SetStateAction<IState | null>>;
+  openModal: React.Dispatch<React.SetStateAction<IState | null>>;
+  closeModal: () => void;
 };
 
 const defaultValue: IModalContext = {
-  setModal: () => {}
+  openModal: () => {},
+  closeModal: () => {}
 };
 
 const ModalContext = React.createContext<IModalContext>(defaultValue);
@@ -112,25 +108,30 @@ interface IModalProviderProps {
 };
 
 const ModalProvider = (props: IModalProviderProps) => {
-  const [modalContent, setModal] = useState<IState | null>(null);
+  const [modalContent, openModal] = useState<IState | null>(null);
+
+  const closeModal = useCallback(() => {
+    openModal(null);
+  }, [openModal]);
 
   const onCancel = useCallback(() => {
     modalContent?.onCancel?.();
-    setModal(null);
-  }, [setModal, modalContent]);
+    closeModal();
+  }, [modalContent, closeModal]);
 
   const onOk = useCallback(() => {
     modalContent?.onOk?.();
-    setModal(null);
-  }, [setModal, modalContent]);
+    closeModal();
+  }, [modalContent, closeModal]);
+
 
   return (
-    <ModalContext.Provider value={{ setModal }} {...props} >
+    <ModalContext.Provider value={{ openModal, closeModal }} {...props} >
       {props.children}
       {modalContent && <Modal
         title={modalContent.title}
         message={modalContent.message}
-        children={modalContent.content}
+        children={modalContent.component}
         onOk={onOk}
         onCancel={onCancel}
       />}
