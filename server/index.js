@@ -24,10 +24,10 @@ const mongoClient = new MongoClient(process.env.MONGO_URI, {
   try {
     await mongoClient.connect();
     app.locals.collection = mongoClient.db('films').collection('list');
-    console.log('db is connected!');
+    console.log(`DB is connected: ${process.env.MONGO_URI}`);
 
     app.listen(app.get('port'));
-    console.log(`server is listening on ${app.get('port')}`);
+    console.log(`Server is listening on ${app.get('port')}`);
   } catch (err) {
     if (err) return console.log(err);
   }
