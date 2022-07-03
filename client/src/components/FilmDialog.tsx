@@ -83,13 +83,13 @@ const FilmDialog = ({ film, onClose }: IProps) => {
       <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row justify-end rounded-b border-slate-200">
         <Button
           className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-500 text-base font-medium text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-20 sm:text-sm"
-          onClick={onClose}
+          onClick={handlePostFilm}
         >
           Ok
         </Button>
         <Button
           className="font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-white text-base font-medium text-gray-700 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm mt-3"
-          onClick={handlePostFilm}
+          onClick={onClose}
         >
           Cancel
         </Button>
