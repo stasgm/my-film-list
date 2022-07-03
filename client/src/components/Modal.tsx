@@ -44,12 +44,9 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
             {/*header*/}
             <div className="bg-white px-4 pt-6 pb-4 sm:p-4 sm:pb-4 sm:pt-6 rounded-t">
               <div className="text-center sm:mt-0 sm:text-left">
-                {/* <div className="sm:flex sm:items-start rounded-t"> */}
-                {/* <h3 className="text-2xl font-semibold">{title || "Alert"}</h3> */}
                 <h3 className="text-lg leading-6 font-medium text-gray-900">{title || "Alert"}</h3>
                 {/* </div> */}
                 {message && (
-                  // <div className="relative p-4 flex-auto">
                   <div className="mt-2">
                     <p className="text-sm text-gray-500">{message}</p>
                   </div>)}
@@ -65,7 +62,10 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
               >
                 Cancel
               </Button>
-              <Button className="font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-20 sm:text-sm mt-3">
+              <Button
+                className="bg-emerald-500 font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 text-white text-base font-medium text-gray-700 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-20 sm:text-sm mt-3"
+                onClick={onOk}
+              >
                 Ok
               </Button>
               {/* <Button

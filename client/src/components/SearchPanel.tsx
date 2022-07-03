@@ -5,12 +5,13 @@ import '../styles/App.css';
 import { StatusFilter } from '../types';
 
 interface IProps {
+  onAddFilm: () => void;
   statusFilter: StatusFilter;
   setSearch: (text: string) => void;
   setStatusFilter: (status: StatusFilter) => void;
 }
 
-const SearchPanel = ({ statusFilter, setStatusFilter, setSearch }: IProps) => {
+const SearchPanel = ({ onAddFilm, statusFilter, setStatusFilter, setSearch }: IProps) => {
   return (
     <div className="bg-white sm:rounded-lg shadow overflow-hidden sm:mb-2 py-2">
       <div className="my-2 whitespace-nowrap sm:inline">

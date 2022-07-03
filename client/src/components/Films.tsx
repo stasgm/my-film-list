@@ -78,7 +78,7 @@ const FilmList = () => {
     setSelctedFilm(null);
   };
 
-  const selectFilm = (id?: string) => {
+  const selectFilm = (id: string | null) => {
     setModal({
       content: <EditFilm
         onPostFilm={postFilm}
@@ -94,6 +94,22 @@ const FilmList = () => {
     setSelctedFilm(film || null);
   };
 
+
+  const handleAddFilm = () => {
+    setModal({
+      content: <EditFilm
+        onPostFilm={postFilm}
+        film={selectedFilm}
+        onUnselectedFilm={() => setSelctedFilm(null)}
+        onDeleteFilm={handleDeleteFilm}
+      />,
+      onOk: () => { console.log("save") }
+    });
+
+    // const film = films.data?.find(el => el.id === id);
+
+    // setSelctedFilm(film || null);
+  };
 
   const handleDeleteFilm = (id: string) => {
     setModal({
@@ -137,7 +153,7 @@ const FilmList = () => {
               <path d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
             )}
         </ActionButton>
-        <ActionButton onClick={() => selectFilm((selectedFilm?.id === row.id) ? undefined : row.id)} active={selectedFilm?.id === row.id}>
+        <ActionButton onClick={() => selectFilm((selectedFilm?.id === row.id) ? null : row.id)} active={selectedFilm?.id === row.id}>
           <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
         </ActionButton>
         <ActionButton onClick={() => handleDeleteFilm(row.id)}>
@@ -180,13 +196,13 @@ const FilmList = () => {
 
   return (
     <>
-      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} />
-      <EditFilm
+      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} onAddFilm={handleAddFilm} />
+      {/* <EditFilm
         onPostFilm={postFilm}
         film={selectedFilm}
         onUnselectedFilm={() => setSelctedFilm(null)}
         onDeleteFilm={handleDeleteFilm}
-      />
+      /> */}
       <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
         <Table columns={columns} dataRows={filteredData} rowKey="id" selected={selectedFilm?.id} />
         {(films.data?.length || 0) === 0 && (
