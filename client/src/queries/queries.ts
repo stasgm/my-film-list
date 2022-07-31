@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { IFilm } from "../types";
+import { IResource } from "../types";
 import fetchApi from '../services/api';
 
-const useFilmsQuery = <T>(select: (data: IFilm[]) => T) => useQuery(['films'], fetchApi.fetchFilms, { select });
+const useFilmsQuery = <T>(select: (data: IResource[]) => T) => useQuery(['films'], fetchApi.fetchFilms, { select });
 
 const useFilmsCount = () => useFilmsQuery((data) => data.length);
 const useFilms = () => useFilmsQuery((films) => films);
@@ -31,18 +31,18 @@ const useFilmMutations = () => {
 
 
   // const addFilm = useMutation(
-  //   (film: IFilm) => fetchApi.addFilm(film),
+  //   (film: IResource) => fetchApi.addFilm(film),
   //   {
   //     onMutate: async (film) => {
   //       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
   //       await queryClient.cancelQueries('films');
 
   //       // Snapshot the previous value
-  //       const previousFilms = queryClient.getQueryData<IFilm[]>('films');
+  //       const previousFilms = queryClient.getQueryData<IResource[]>('films');
 
   //       // Optimistically update to the new value
   //       if (previousFilms) {
-  //         queryClient.setQueryData<IFilm[]>('films', {
+  //         queryClient.setQueryData<IResource[]>('films', {
   //           ...previousFilms,
   //           ...film
   //         })
@@ -78,7 +78,7 @@ const useFilmMutations = () => {
 
   //       // Optimistically update to the new value
   //       if (previousFilms) {
-  //         queryClient.setQueryData<IFilm[] | undefined>('films', old => old?.map(i => i.id === filmStatus.id ? { ...i, filmStatus } : i))
+  //         queryClient.setQueryData<IResource[] | undefined>('films', old => old?.map(i => i.id === filmStatus.id ? { ...i, filmStatus } : i))
   //       }
 
   //       return { previousFilms }
@@ -91,7 +91,7 @@ const useFilmMutations = () => {
   //     },
   //     onSuccess: (data, filmStatus, context) => {
   //       queryClient.setQueryData(["films", { id: filmStatus.id }], data);
-  //       // queryClient.setQueryData<IFilm[] | undefined>('films', old => old?.map(i => i.id === (context?.previousFilms as IFilm).id ? data : i))
+  //       // queryClient.setQueryData<IResource[] | undefined>('films', old => old?.map(i => i.id === (context?.previousFilms as IResource).id ? data : i))
   //     },
   //     onSettled: (data) => {
   //       queryClient.invalidateQueries(['films', data?.id]);

@@ -1,33 +1,34 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/outline';
 import { useFilmMutations } from '../queries/queries';
-import { IFilm } from '../types';
-import { isFilm } from '../utils';
+import { IResource, IType } from '../types';
+import { isResource } from '../utils';
 import { Button } from './ButtonGroup';
 
 interface IProps {
-  film?: IFilm;
+  resource?: IResource;
   onClose: () => void;
 }
 
-const FilmDialog = ({ film, onClose }: IProps) => {
-  const initialState: IFilm = useMemo(() => ({
+const FilmDialog = ({ resource, onClose }: IProps) => {
+  const initialState: IResource = useMemo(() => ({
     id: '',
     seen: false,
     name: '',
     url: '',
+    type: IType.film
   }), []);
 
-  const [tmpFilm, setTmpFilm] = useState<IFilm>(initialState);
+  const [tmpFilm, setTmpFilm] = useState<IResource>(initialState);
 
   useEffect(() => {
-    setTmpFilm(film || initialState);
-  }, [film, initialState]);
+    setTmpFilm(resource || initialState);
+  }, [resource, initialState]);
 
   const mutation = useFilmMutations();
 
   const handlePostFilm = useCallback(() => {
-    if (isFilm(tmpFilm)) {
+    if (isResource(tmpFilm)) {
       tmpFilm.id
         ? mutation.updateFilm.mutate(tmpFilm)
         : mutation.addFilm.mutate(tmpFilm)
@@ -36,9 +37,30 @@ const FilmDialog = ({ film, onClose }: IProps) => {
     onClose();
   }, [mutation.addFilm, mutation.updateFilm, onClose, tmpFilm]);
 
+  const setType = (type: string): IType => Number.parseInt(type) as IType;
+
   return (
     <>
       <div className="overflow-hidden flex flex-wrap">
+        <div className="my-2 mx-4 flex sm:flex-row flex-col w-full">
+          <div className="w-20 self-start sm:self-center">
+            <label className="text-gray-600 font-semibold sm:text-base text-sm" htmlFor="url">
+              Type
+            </label>
+          </div>
+          <div className="relative rounded-md shadow-sm inline-block w-full ">
+            <select
+              value={tmpFilm.type}
+              onChange={(el) => setTmpFilm({ ...tmpFilm, type: setType(el.currentTarget.value) })}
+              className="focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 rounded-md placeholder-gray-400 w-full font-normal"
+              id="type"
+              placeholder="Type"
+            >
+              <option value="0">Film</option>
+              <option value="1">Serial</option>
+            </select>
+          </div>
+        </div>
         <div className="my-2 mx-4 flex sm:flex-row flex-col w-full">
           <div className="w-20 self-start sm:self-center">
             <label className="text-gray-600 font-semibold sm:text-base text-sm" htmlFor="name">

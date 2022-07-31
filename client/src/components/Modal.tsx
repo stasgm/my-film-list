@@ -47,7 +47,7 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
           {/*content*/}
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             {/*header*/}
-            <div className="bg-white px-4 pt-6 pb-4 sm:p-4 sm:pb-4 sm:pt-6 rounded-t">
+            <div className="px-4 pt-6 pb-4 sm:p-4 sm:pb-4 sm:pt-6 rounded-t bg-gray-200">
               <div className="text-center sm:mt-0 sm:text-left">
                 <h3 className="text-lg leading-6 font-semibold uppercase text-gray-900">{title || "Alert"}</h3>
                 {/* </div> */}

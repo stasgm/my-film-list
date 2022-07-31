@@ -6,14 +6,15 @@ import Table from './Table';
 import { useFilms, useFilmMutations } from '../queries/queries';
 import { useModal } from './Modal';
 
-import { IFilm, StatusFilter } from '../types';
+import { IResource, StatusFilter } from '../types';
 import SearchPanel from './SearchPanel';
 import ActionButton from './ActionButton';
 import FilmDialog from './FilmDialog';
 
 import '../styles/App.css';
+import FilmInfo from './FilmInfo';
 
-type FilterableFilm = IFilm & { lowerCaseTitle: string };
+type FilterableFilm = IResource & { lowerCaseTitle: string };
 
 const FilmList = () => {
   const { openModal, closeModal } = useModal();
@@ -68,7 +69,20 @@ const FilmList = () => {
 
     openModal({
       title: "Edit film",
-      component: <FilmDialog film={filmEdit} onClose={closeModal} />,
+      component: <FilmDialog resource={filmEdit} onClose={closeModal} />,
+    });
+  }, [closeModal, films.data, openModal]);
+
+  const handleShowFilmInfo = useCallback((id: string) => {
+    const filmEdit = films.data?.find(el => el.id === id);
+
+    if (!filmEdit) {
+      return;
+    }
+
+    openModal({
+      title: `${filmEdit.name}`,
+      component: <FilmInfo resource={filmEdit} onClose={closeModal} />,
     });
   }, [closeModal, films.data, openModal]);
 
@@ -99,7 +113,7 @@ const FilmList = () => {
       value
     );
 
-    return <a href={row.url} target="_blank" rel="noreferrer" className="no-underline hover:underline"><FilmIcon className="h-5 w-5 inline mr-2" /> {res}</a>
+    return <span className="hover:underline inline-flex cursor-pointer items-center" onClick={() => handleShowFilmInfo(row.id)}><FilmIcon className="h-5 w-5 inline mr-2" />{res}</span>
   };
 
   const Actions = (value: string, row: FilterableFilm) => {

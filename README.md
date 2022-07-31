@@ -4,9 +4,11 @@
 
 ### Back end
 
-- [ ]  add auth0.com support
+- [ ] add auth0.com support
 - [x] add envs (dev, test, prod)
 - [ ] deploy to Heroku
+- [ ] update patch method to pass only needed
+- [ ]  add sort number and sort by sort number
 
 ### Front end
 
@@ -21,7 +23,8 @@
 - [ ]  filters save in local storage
 - [ ]  for mobiles hide action buttons and show menu button with popup actions
 - [ ]  add sticky headers
-- [ ]  add creation date time  and sort by date\time
+- [ ]  add creation date time and sort by date\time
+- [ ]  add sort number and sort by sort number
 
 ## Deployment
 

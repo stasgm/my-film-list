@@ -16,7 +16,7 @@ app.use(compression());
 
 const jsonParser = express.json();
 
-const mongoClient = new MongoClient(process.env.MONGO_URI, {
+const mongoClient = new MongoClient(process.env.MONGO_URI || 'mongodb://localhost:27017', {
   useNewUrlParser: true,
 });
 
@@ -36,6 +36,16 @@ const mongoClient = new MongoClient(process.env.MONGO_URI, {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const mapFilm = (film) => {
+  return {
+    id: film._id,
+    name: film.name,
+    url: film.url,
+    seen: film.seen,
+    type: film.type,
+  };
+};
+
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
@@ -47,14 +57,7 @@ app.get('/api/films', async (req, res) => {
 
   try {
     const films = await collection.find({}).toArray();
-    const list = films.map((i) => {
-      return {
-        id: i._id,
-        name: i.name,
-        url: i.url,
-        seen: i.seen,
-      };
-    });
+    const list = films.map((i) => mapFilm(i));
     res.send(list);
   } catch (err) {
     return console.log(err);
@@ -68,12 +71,7 @@ app.get('/api/films/:id', async (req, res) => {
   try {
     const id = ObjectId(req.params.id);
     const film = await collection.findOne({ _id: id });
-    res.send({
-      id: film._id,
-      name: film.name,
-      url: film.url,
-      seen: film.seen,
-    });
+    res.send(mapFilm(film));
   } catch (err) {
     console.log(err);
     res.send({ error: err.message });
@@ -90,6 +88,7 @@ app.post('/api/films', jsonParser, async (req, res) => {
     name: req.body.name,
     url: req.body.url,
     seen: req.body.seen || false,
+    type: req.body.type || '0',
   };
 
   try {
@@ -112,12 +111,7 @@ app.delete('/api/films/:id', async (req, res) => {
     const id = ObjectId(req.params.id);
     const result = await collection.findOneAndDelete({ _id: id });
     const film = result.value;
-    res.send({
-      id: film._id,
-      name: film.name,
-      url: film.url,
-      seen: film.seen,
-    });
+    res.send(mapFilm(film));
   } catch (err) {
     console.log(err);
     res.send({ error: err });
@@ -134,16 +128,18 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
     const id = ObjectId(req.params.id);
     const result = await collection.findOneAndUpdate(
       { _id: id },
-      { $set: { name: req.body.name, url: req.body.url, seen: req.body.seen } },
+      {
+        $set: {
+          name: req.body.name,
+          url: req.body.url,
+          seen: req.body.seen,
+          type: req.body.type,
+        },
+      },
       { returnDocument: 'after' },
     );
     const film = result.value;
-    res.send({
-      id: film._id,
-      name: film.name,
-      url: film.url,
-      seen: film.seen,
-    });
+    res.send(mapFilm(film));
   } catch (err) {
     console.log(err);
     res.send({ error: err });
@@ -164,12 +160,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
       { returnDocument: 'after' },
     );
     const film = result.value;
-    res.send({
-      id: film._id,
-      name: film.name,
-      url: film.url,
-      seen: film.seen,
-    });
+    res.send(mapFilm(film));
   } catch (err) {
     console.log(err);
     res.send({ error: err });

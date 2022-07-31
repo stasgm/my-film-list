@@ -1,14 +1,14 @@
 import axios from "axios";
-import { IFilm, INewFilm, INewFilmState } from "../types";
+import { IResource, INewFilm, INewFilmState } from "../types";
 
 export class CancelablePromise<PayloadType> extends Promise<PayloadType> {
   public cancel?: () => void
 }
 
 const fetchApi = {
-  fetchFilms: async (): CancelablePromise<IFilm[]> => {
+  fetchFilms: async (): CancelablePromise<IResource[]> => {
     const controller = new AbortController()
-    const data: CancelablePromise<IFilm[]> = (async () => {
+    const data: CancelablePromise<IResource[]> = (async () => {
       try {
         const { data } = await axios.get('/api/films');
         return data;
@@ -22,27 +22,27 @@ const fetchApi = {
     return data;
   },
 
-  fetchFilm: async (id: string): CancelablePromise<IFilm> => {
+  fetchFilm: async (id: string): CancelablePromise<IResource> => {
     const { data } = await axios.get(`/api/films/${id}`);
     return data;
   },
 
-  addFilm: async (film: INewFilm): CancelablePromise<IFilm> => {
+  addFilm: async (film: INewFilm): CancelablePromise<IResource> => {
     const { data } = await axios.post(`/api/films`, film);
     return data;
   },
 
-  updateFilm: async (film: IFilm): CancelablePromise<IFilm> => {
+  updateFilm: async (film: IResource): CancelablePromise<IResource> => {
     const { data } = await axios.put(`/api/films/${film.id}`, film);
     return data;
   },
 
-  updateStatus: async (filmState: INewFilmState): CancelablePromise<IFilm> => {
+  updateStatus: async (filmState: INewFilmState): CancelablePromise<IResource> => {
     const { data } = await axios.patch(`/api/films/${filmState.id}`, { seen: filmState.status });
     return data;
   },
 
-  deleteFilm: async (id: string): CancelablePromise<IFilm> => {
+  deleteFilm: async (id: string): CancelablePromise<IResource> => {
     const { data } = await axios.delete(`/api/films/${id}`);
     return data;
   },
