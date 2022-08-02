@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { IResource } from "../types";
-import fetchApi from '../services/api';
+import { fetchApi } from '../services/api';
 
 const useFilmsQuery = <T>(select: (data: IResource[]) => T) => useQuery(['films'], fetchApi.fetchFilms, { select });
 

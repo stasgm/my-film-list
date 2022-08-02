@@ -63,4 +63,4 @@ export class FetchError<PayloadType> extends Error {
   }
 }
 
-export default fetchApi;
+export { fetchApi };

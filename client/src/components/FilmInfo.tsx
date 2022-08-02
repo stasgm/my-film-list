@@ -12,6 +12,8 @@ interface IProps {
 const FilmInfo = ({ resource, onClose }: IProps) => {
   const [info, setInfo] = useState<ISerialInfo | IFilmInfo | undefined>(undefined);
 
+  const [editMode, setEditMode] = useState<boolean>(false);
+
   useEffect(() => {
     setInfo(resource.info);
   }, [resource.info]);
@@ -21,8 +23,8 @@ const FilmInfo = ({ resource, onClose }: IProps) => {
   const handlePostInfo = useCallback(() => {
     mutation.updateFilm.mutate({ ...resource, info });
 
-    onClose();
-  }, [info, mutation.updateFilm, onClose, resource]);
+    setEditMode(false);
+  }, [info, mutation.updateFilm, resource]);
 
   return (
     <>
@@ -34,32 +36,31 @@ const FilmInfo = ({ resource, onClose }: IProps) => {
       </div>
       {resource.type === IType.serial
         ? (
-          <div className="my-2 mx-2 w-full pl-3">
-            Serial info
+          <div className="border-l-neutral-600 border-b-2 my-2 mx-2 grow pl-3">
+            Serial info:
           </div>)
         : null
       }
       {resource.type === IType.film
         ? (
-          <div className="my-6 mx-2 w-full inset-y-0 left-0 pl-3">
-            Film info
+          <div className="border-l-neutral-600 border-b-2 my-2 mx-2 grow pl-3">
+            Film info:
           </div>)
         : null
       }
       <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row justify-end rounded-b border-slate-200">
         <Button
-          className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-emerald-500 text-base font-medium text-white hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-20 sm:text-sm"
-          onClick={handlePostInfo}
+          className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base text-white hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 sm:ml-3 sm:w-24 sm:text-sm"
+          onClick={editMode ? handlePostInfo : () => setEditMode(true)}
         >
-          Ok
+          {editMode ? 'Save' : 'Edit'}
         </Button>
         <Button
-          className="font-bold uppercase w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-white text-base font-medium text-gray-700 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm mt-3"
-          onClick={onClose}
+          className="w-full font-bold uppercase inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-red-600 text-white text-base hover:bg-red-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-24 sm:text-sm mt-3"
+          onClick={editMode ? () => setEditMode(false) : onClose}
         >
-          Cancel
+          {editMode ? 'Cancel' : 'Close'}
         </Button>
-
       </div>
     </>
   );
