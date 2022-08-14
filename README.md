@@ -8,14 +8,14 @@
 - [x] add envs (dev, test, prod)
 - [ ] deploy to Heroku
 - [ ] update patch method to pass only needed
-- [ ]  add sort number and sort by sort number
+- [ ] add sort number and sort by sort number
 
 ### Front end
 
 - [ ] add login\logout\profile buttons
 - [ ] add fields:
   - [ ] film genres
-  - [ ] type (serial\film). Add to filters
+  - [x] type (serial\film). Add to filters
   - [ ] last serial episode
 - [ ]  add details page for film information (links, description)
 - [ ]  add filter by genres (select multiple options)
@@ -25,6 +25,7 @@
 - [ ]  add sticky headers
 - [ ]  add creation date time and sort by date\time
 - [ ]  add sort number and sort by sort number
+- [x]  for serials change icon
 
 ## Deployment
 

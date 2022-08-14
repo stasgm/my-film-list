@@ -2,15 +2,17 @@ import { SearchIcon } from '@heroicons/react/solid';
 import ButtonGroup from './ButtonGroup';
 
 import '../styles/App.css';
-import { StatusFilter } from '../types';
+import { ResourceTypeFilter, StatusFilter } from '../types';
 
 interface IProps {
   statusFilter: StatusFilter;
+  typeFilter: ResourceTypeFilter;
   setSearch: (text: string) => void;
   setStatusFilter: (status: StatusFilter) => void;
+  setTypeFilter: (status: ResourceTypeFilter) => void;
 }
 
-const SearchPanel = ({ statusFilter, setStatusFilter, setSearch }: IProps) => {
+const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, setTypeFilter }: IProps) => {
   return (
     <div className="bg-white sm:rounded-lg shadow overflow-hidden sm:mb-2 py-2">
       <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
@@ -63,6 +65,38 @@ const SearchPanel = ({ statusFilter, setStatusFilter, setSearch }: IProps) => {
             onMouseDown={() => setStatusFilter(StatusFilter.watch)}
           >
             Watch
+          </ButtonGroup.Button>
+        </ButtonGroup>
+      </div>
+      <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
+        <label
+          className="text-gray-600 ml-4 mr-4 font-semibold w-12 inline-block sm:w-auto sm:text-sm"
+          htmlFor="search"
+        >
+          Type
+        </label>
+        <ButtonGroup>
+          {/* Buttons use two handlers here: onClick for keyboard navigation, and onMouseDown for UI reactivity  */}
+          <ButtonGroup.Button
+            active={typeFilter === ResourceTypeFilter.all}
+            onClick={() => setTypeFilter(ResourceTypeFilter.all)}
+            onMouseDown={() => setTypeFilter(ResourceTypeFilter.all)}
+          >
+            All
+          </ButtonGroup.Button>
+          <ButtonGroup.Button
+            active={typeFilter === ResourceTypeFilter.film}
+            onClick={() => setTypeFilter(ResourceTypeFilter.film)}
+            onMouseDown={() => setTypeFilter(ResourceTypeFilter.film)}
+          >
+            Films
+          </ButtonGroup.Button>
+          <ButtonGroup.Button
+            active={typeFilter === ResourceTypeFilter.serial}
+            onClick={() => setTypeFilter(ResourceTypeFilter.serial)}
+            onMouseDown={() => setTypeFilter(ResourceTypeFilter.serial)}
+          >
+            Serials
           </ButtonGroup.Button>
         </ButtonGroup>
       </div>

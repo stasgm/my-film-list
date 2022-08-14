@@ -1,4 +1,4 @@
-export enum IType {
+export enum IResourceType {
   'film',
   'serial'
 }
@@ -17,7 +17,7 @@ export interface IResource {
   name: string;
   url: string;
   seen?: boolean;
-  type?: IType;
+  type?: IResourceType;
   info?: ISerialInfo | IFilmInfo;
 }
 
@@ -26,7 +26,7 @@ export interface IFilm extends IResource {
   name: string;
   url: string;
   seen?: boolean;
-  type?: IType;
+  type?: IResourceType;
 }
 
 export interface ISerial extends IResource {
@@ -34,7 +34,7 @@ export interface ISerial extends IResource {
   name: string;
   url: string;
   seen?: boolean;
-  type?: IType;
+  type?: IResourceType;
 }
 
 export interface INewFilm extends Omit<IFilm, 'id'> {
@@ -47,4 +47,10 @@ export enum StatusFilter {
   all,
   seen,
   watch,
-}
+};
+
+export enum ResourceTypeFilter {
+  'all',
+  'film',
+  'serial',
+};

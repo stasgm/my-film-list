@@ -1,7 +1,7 @@
-import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { useFilmMutations } from '../queries/queries';
-import { IFilmInfo, IResource, ISerialInfo, IType } from '../types';
+import { IFilmInfo, IResource, ISerialInfo, IResourceType } from '../types';
 import { Button } from './ButtonGroup';
 
 interface IProps {
@@ -34,14 +34,14 @@ const FilmInfo = ({ resource, onClose }: IProps) => {
           <span className="overflow-hidden ml-2">{resource.url}</span>
         </a>
       </div>
-      {resource.type === IType.serial
+      {resource.type === IResourceType.serial
         ? (
           <div className="border-l-neutral-600 border-b-2 my-2 mx-2 grow pl-3">
             Serial info:
           </div>)
         : null
       }
-      {resource.type === IType.film
+      {resource.type === IResourceType.film
         ? (
           <div className="border-l-neutral-600 border-b-2 my-2 mx-2 grow pl-3">
             Film info:

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/outline';
 import { useFilmMutations } from '../queries/queries';
-import { IResource, IType } from '../types';
+import { IResource, IResourceType } from '../types';
 import { isResource } from '../utils';
 import { Button } from './ButtonGroup';
 
@@ -16,7 +16,7 @@ const FilmDialog = ({ resource, onClose }: IProps) => {
     seen: false,
     name: '',
     url: '',
-    type: IType.film
+    type: IResourceType.film
   }), []);
 
   const [tmpFilm, setTmpFilm] = useState<IResource>(initialState);
@@ -37,7 +37,7 @@ const FilmDialog = ({ resource, onClose }: IProps) => {
     onClose();
   }, [mutation.addFilm, mutation.updateFilm, onClose, tmpFilm]);
 
-  const setType = (type: string): IType => Number.parseInt(type) as IType;
+  const setType = (type: string): IResourceType => Number.parseInt(type) as IResourceType;
 
   return (
     <>

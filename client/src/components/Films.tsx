@@ -1,12 +1,13 @@
 import { useMemo, useState, useCallback } from 'react';
 import { FilmIcon } from '@heroicons/react/solid';
+import { FastForwardIcon } from '@heroicons/react/outline';
 import Highlighter from 'react-highlight-words';
 import Loader from './Loader';
 import Table from './Table';
 import { useFilms, useFilmMutations } from '../queries/queries';
 import { useModal } from './Modal';
 
-import { IResource, StatusFilter } from '../types';
+import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
 import SearchPanel from './SearchPanel';
 import ActionButton from './ActionButton';
 import FilmDialog from './FilmDialog';
@@ -24,6 +25,7 @@ const FilmList = () => {
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState(StatusFilter.watch);
+  const [typeFilter, setTypeFilter] = useState(ResourceTypeFilter.serial);
 
   const filterableData = useMemo(
     () =>
@@ -44,6 +46,12 @@ const FilmList = () => {
       filteredData = filteredData.filter(film => !film.seen)
     }
 
+    if (typeFilter === ResourceTypeFilter.film) {
+      filteredData = filteredData.filter(film => film.type === IResourceType.film)
+    } else if (typeFilter === ResourceTypeFilter.serial) {
+      filteredData = filteredData.filter(film => film.type === IResourceType.serial)
+    }
+
     const trimmedSearch = search.trim();
     const searchTokens = trimmedSearch.toLowerCase().split(/\s+/);
 
@@ -58,7 +66,7 @@ const FilmList = () => {
     }
 
     return { filteredData, hasMatchingText, searchTokens }
-  }, [filterableData, search, statusFilter])
+  }, [filterableData, search, statusFilter, typeFilter])
 
   const handleEditFilm = useCallback((id: string) => {
     const filmEdit = films.data?.find(el => el.id === id);
@@ -113,7 +121,14 @@ const FilmList = () => {
       value
     );
 
-    return <span className="hover:underline inline-flex cursor-pointer items-center" onClick={() => handleShowFilmInfo(row.id)}><FilmIcon className="h-5 w-5 inline mr-2" />{res}</span>
+    const isFilm = row.type === IResourceType.film;
+
+    return (
+      <span className="hover:underline inline-flex cursor-pointer items-center" onClick={() => handleShowFilmInfo(row.id)}>
+        <span>{isFilm ? <FilmIcon className="h-5 w-5 inline mr-2" /> : <FastForwardIcon className="h-5 w-5 inline mr-2" />}</span>
+        <span>{res}</span>
+      </span>
+    );
   };
 
   const Actions = (value: string, row: FilterableFilm) => {
@@ -175,7 +190,13 @@ const FilmList = () => {
 
   return (
     <>
-      <SearchPanel setSearch={setSearch} setStatusFilter={setStatusFilter} statusFilter={statusFilter} />
+      <SearchPanel
+        setSearch={setSearch}
+        setStatusFilter={setStatusFilter}
+        statusFilter={statusFilter}
+        setTypeFilter={setTypeFilter}
+        typeFilter={typeFilter}
+      />
       <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
         <Table columns={columns} dataRows={filteredData} rowKey="id" />
         {(films.data?.length || 0) === 0 && (

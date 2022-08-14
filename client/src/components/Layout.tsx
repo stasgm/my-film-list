@@ -34,7 +34,7 @@ const Layout = ({ children }: Props) => {
       </div >
 
       <main className="-mt-44 pt-4 sm:pt-3 sm:-mt-32">
-        <div className="max-w-7xl mx-auto pb-12 sm:px-2 lg:px-8">{children}</div>
+        <div className="max-w-7xl mx-auto sm:pb-12 sm:px-2 lg:px-8">{children}</div>
       </main>
     </div >
   )
