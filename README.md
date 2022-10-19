@@ -1,4 +1,4 @@
-# Simple nodejs server
+# My fillm list
 
 ## Todo
 
@@ -7,7 +7,7 @@
 - [ ] add auth0.com support
 - [x] add envs (dev, test, prod)
 - [ ] deploy to Heroku
-- [ ] update patch method to pass only needed
+- [ ] update patch method to pass only needed props
 - [ ] add sort number and sort by sort number
 
 ### Front end
@@ -26,6 +26,8 @@
 - [ ]  add creation date time and sort by date\time
 - [ ]  add sort number and sort by sort number
 - [x]  for serials change icon
+- [ ]  add even and odd rules
+- [ ]  BUG: set default type
 
 ## Deployment
 
