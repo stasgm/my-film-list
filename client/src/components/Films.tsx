@@ -124,8 +124,8 @@ const FilmList = () => {
     const isFilm = row.type === IResourceType.film;
 
     return (
-      <span className="hover:underline inline-flex cursor-pointer items-center" onClick={() => handleShowFilmInfo(row.id)}>
-        <span>{isFilm ? <FilmIcon className="h-5 w-5 inline mr-2" /> : <FastForwardIcon className="h-5 w-5 inline mr-2" />}</span>
+      <span className="hover:underline inline-flex cursor-pointer items-center text-base" onClick={() => handleShowFilmInfo(row.id)}>
+        <span>{isFilm ? <FilmIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2" /> : <FastForwardIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2" />}</span>
         <span>{res}</span>
       </span>
     );
@@ -161,7 +161,7 @@ const FilmList = () => {
   const URLcomponent = (value: string, row: FilterableFilm) => {
     return (
       <a href={row.url} target="_blank" rel="noreferrer" className="no-underline hover:underline ">
-        <span className="overflow-hidden">{row.url}</span>
+        <span className="overflow-hidden text-base">{row.url}</span>
       </a>
     )
   };

@@ -25,6 +25,7 @@ const ButtonGroup = ({ children }: ButtonGroupProps): JSX.Element => {
             justify-center
             grow
             focus:z-10 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500
+            tv:text-lg
             ${isFirst ? "rounded-l-md" : isMiddle ? "-ml-px" : isLast ? "-ml-px rounded-r-md" : ""}
             ${child.props.active
                 ? "z-10 bg-indigo-50 outline-none ring-1 ring-indigo-500 border-indigo-500 hover:bg-indigo-150"

@@ -7,6 +7,9 @@ module.exports = {
       animation: {
         appear: 'appear 1s',
       },
+      screens: {
+        tv: '1920px',
+      },
       keyframes: {
         appear: {
           '0%': { opacity: 0 },
