@@ -1,26 +1,27 @@
 {
   "root": true,
   "extends": [
-    "airbnb",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "plugin:promise/recommended",
-    "plugin:sonarjs/recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript"
   ],
-  "plugins": ["react", "@typescript-eslint/eslint-plugin", "import", "promise", "sonarjs"],
+  "plugins": ["react", "@typescript-eslint/eslint-plugin", "import", "promise"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
-    }
+    },
+    "project": "tsconfig.json"
   },
   "env": {
     "es6": true,
-    "browser": true
+    "browser": true,
+    "node": true,
+    "jest": true
   },
 
   "parser": "babel-eslint",

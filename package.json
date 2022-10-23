@@ -1,49 +1,33 @@
 {
-  "name": "node-server",
-  "version": "1.0.0",
-  "description": "Simple server on nodejs",
-  "main": "server.js",
+  "name": "my-film-list-server",
+  "version": "0.2.0",
+  "description": "My-film-list",
   "author": "Stanislau Shliakhtsich",
-  "license": "MIT",
+  "private": true,
+  "license": "UNLICENSED",
   "type": "module",
   "engines": {
     "yarn": ">=1.22",
     "node": ">=16.3.0"
   },
   "scripts": {
-    "prebuild": "rimraf dist",
-    "client:start": "cd client && yarn start",
-    "build": "cd client && yarn install && yarn build",
-    "server:start": "node server/index.js",
-    "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js localhost 3001",
-    "start:dev": "cross-env dotenv -e .env.local yarn server:start",
-    "start:dev-h": "cross-env dotenv -e .env.local-h yarn server:start",
-    "start:prod": "cross-env yarn server:start",
-    "lint": "eslint \"{src,apps,client,test}/**/*.ts\"",
-    "lint:fix": "eslint --fix \"{src,apps,client,test}/**/*.ts\"",
-    "prettier:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prettier:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "prebuild": "rimraf backend/dist && rimraf frontend/build",
+    "prestart": "rimraf backend/dist && rimraf frontend/build",
+    "postinstall": "husky install && cd backend && yarn && cd ../frontend && yarn",
+    "client:start": "cd frontend && yarn start",
+    "build": "cd backend && yarn build && cd ../client && yarn build",
+    "start": "yarn start:dev",
+    "start:dev": "cd backend && nest start --watch",
+    "start:debug": "cd backend && nest start --debug --watch",
+    "start:prod": "node backend/dist/main",
+    "lint": "cd backend && yarn lint",
+    "lint:fix": "eslint --fix \"{backend,frontend}/**/*.ts\"",
+    "prettier:check": "prettier --check \"backend/src/**/*.ts\" \"test/**/*.ts\"",
+    "prettier:fix": "prettier --write \"backend/src/**/*.ts\" \"test/**/*.ts\"",
+    "type-check": "cd backend && yarn type-check"
   },
   "dependencies": {
-    "rimraf": "^3.0.2",
-    "body-parser": "^1.20.0",
-    "compression": "^1.7.4",
-    "cross-env": "^7.0.3",
-    "dotenv-cli": "^6.0.0",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1",
-    "http-proxy-middleware": "^2.0.6",
-    "mongodb": "^4.8.1"
-  },
-  "devDependencies": {
-    "@types/mongodb": "^4.0.6",
-    "nodemon": "^2.0.19",
-    "prettier": "^2.7.1",
-    "eslint": "^8.20.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-promise": "^6.0.0"
+    "husky": "^8.0.1",
+    "lint-staged": "^13.0.3"
   }
 }
