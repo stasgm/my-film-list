@@ -2,6 +2,7 @@
   "root": true,
   "extends": [
     "airbnb",
+    "prettier",
     "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
     "plugin:promise/recommended",
@@ -22,9 +23,9 @@
     "es6": true,
     "browser": true
   },
-
   "parser": "babel-eslint",
   "rules": {
+    "quotes": ["error", "double"],
     "strict": 0,
     "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
     "linebreak-style": ["error", "windows"],

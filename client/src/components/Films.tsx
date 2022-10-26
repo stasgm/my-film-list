@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState, useCallback, useEffect } from 'react';
 import { FilmIcon } from '@heroicons/react/solid';
 import { FastForwardIcon } from '@heroicons/react/outline';
 import Highlighter from 'react-highlight-words';
@@ -6,6 +6,7 @@ import Loader from './Loader';
 import Table from './Table';
 import { useFilms, useFilmMutations } from '../queries/queries';
 import { useModal } from './Modal';
+import { lsUtils } from '../utils';
 
 import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
 import SearchPanel from './SearchPanel';
@@ -24,8 +25,18 @@ const FilmList = () => {
   const mutation = useFilmMutations();
 
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState(StatusFilter.watch);
-  const [typeFilter, setTypeFilter] = useState(ResourceTypeFilter.serial);
+
+  const [statusFilter, setStatusFilter] = useState(lsUtils.getItem<StatusFilter>('StatusFilter', StatusFilter.watch));
+
+  const [typeFilter, setTypeFilter] = useState(lsUtils.getItem<ResourceTypeFilter>('TypeFilter', ResourceTypeFilter.serial));
+
+  useEffect(() => {
+    lsUtils.setItem('StatusFilter', statusFilter);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    lsUtils.setItem('TypeFilter', typeFilter);
+  }, [typeFilter]);
 
   const filterableData = useMemo(
     () =>

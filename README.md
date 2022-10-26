@@ -23,7 +23,7 @@
 - [ ]  add details page for film information (links, description)
 - [ ]  add filter by genres (select multiple options)
 - [x]  add filter by type
-- [ ]  filters save in local storage
+- [x]  filters save in local storage
 - [ ]  for mobiles hide action buttons and show menu button with popup actions
 - [ ]  add sticky headers
 - [ ]  add creation date time and sort by date\time
