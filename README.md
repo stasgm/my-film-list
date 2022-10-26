@@ -9,6 +9,9 @@
 - [ ] deploy to Heroku
 - [ ] update patch method to pass only needed props
 - [ ] add sort number and sort by sort number
+- [ ] add tests
+  - [ ] unit test
+  - [ ] integration test
 
 ### Front end
 
@@ -19,15 +22,15 @@
   - [ ] last serial episode
 - [ ]  add details page for film information (links, description)
 - [ ]  add filter by genres (select multiple options)
-- [ ]  add filter by type
+- [x]  add filter by type
 - [ ]  filters save in local storage
 - [ ]  for mobiles hide action buttons and show menu button with popup actions
 - [ ]  add sticky headers
 - [ ]  add creation date time and sort by date\time
 - [ ]  add sort number and sort by sort number
 - [x]  for serials change icon
-- [ ]  add even and odd rules
-- [ ]  BUG: set default type
+- [x]  add even and odd rules
+- [x]  BUG: set default type
 
 ## Deployment
 
