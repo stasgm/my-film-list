@@ -1,4 +1,4 @@
-import { SearchIcon } from '@heroicons/react/solid';
+import { MagnifyingGlassIcon as SearchIcon } from '@heroicons/react/24/outline';
 import ButtonGroup from './ButtonGroup';
 
 import '../styles/App.css';
@@ -24,7 +24,7 @@ const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, set
         </label>
         <div className="relative rounded-md shadow-sm inline-block grow sm:grow-0 sm:mr-0 mr-3">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon className="h-5 w-5 text-gray-400" />
+            <SearchIcon className="h-6 w-6 text-gray-400" />
           </div>
           <input
             className="focus:ring-indigo-500 focus:border-indigo-500 block pl-10 sm:text-sm tv:text-lg border-gray-300 rounded-md placeholder-gray-400 w-full sm:w-48 md:w-64"

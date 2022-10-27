@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
-import { InformationCircleIcon, ExternalLinkIcon } from '@heroicons/react/outline';
+import { InformationCircleIcon, LinkIcon } from '@heroicons/react/20/solid';
 import { useFilmMutations } from '../queries/queries';
 import { IResource, IResourceType } from '../types';
 import { isResource } from '../utils';
@@ -89,7 +89,7 @@ const FilmDialog = ({ resource, onClose }: IProps) => {
           </div>
           <div className="relative rounded-md shadow-sm inline-block w-full ">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <ExternalLinkIcon className="h-5 w-5 text-gray-400" />
+              <LinkIcon className="h-5 w-5 text-gray-400" />
             </div>
             <input
               className="focus:ring-indigo-500 focus:border-indigo-500 pl-10 sm:text-sm border-gray-300 rounded-md placeholder-gray-400 w-full"

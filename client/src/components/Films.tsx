@@ -1,6 +1,5 @@
 import { useMemo, useState, useCallback, useEffect } from 'react';
-import { FilmIcon } from '@heroicons/react/solid';
-import { FastForwardIcon } from '@heroicons/react/outline';
+import { FilmIcon, TvIcon as SerialIcon } from '@heroicons/react/24/outline';
 import Highlighter from 'react-highlight-words';
 import Loader from './Loader';
 import Table from './Table';
@@ -136,7 +135,7 @@ const FilmList = () => {
 
     return (
       <span className="hover:underline inline-flex cursor-pointer items-center text-base" onClick={() => handleShowFilmInfo(row.id)}>
-        <span>{isFilm ? <FilmIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2" /> : <FastForwardIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2" />}</span>
+        <span>{isFilm ? <FilmIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2 tv:mr-6" /> : <SerialIcon className="tv:h-6 tv:w-6 h-5 w-5 inline mr-2 tv:mr-6" />}</span>
         <span>{res}</span>
       </span>
     );
