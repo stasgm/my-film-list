@@ -31,6 +31,8 @@
 - [x]  for serials change icon
 - [x]  add even and odd rules
 - [x]  BUG: set default type
+- [ ]  add global error boundry component
+- [ ]  add global error handling for api requests
 
 ## Deployment
 
