@@ -1,5 +1,5 @@
-import type { QueryKey, QueryFunction } from "react-query";
-import { useQuery } from "react-query";
+import type { QueryKey, QueryFunction } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 import { queryClient } from "../utils";
 
