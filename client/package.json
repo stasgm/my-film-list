@@ -28,7 +28,7 @@
     "cross-env": "^7.0.3"
   },
   "scripts": {
-    "start:prod": "cross-env REACT_APP_API_URL=https://my-film-list.onrender.com/api react-scripts start",
+    "start:local-render": "cross-env REACT_APP_API_URL=https://my-film-list.onrender.com/api react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
