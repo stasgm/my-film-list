@@ -17,7 +17,7 @@
     "server:start": "node server/index.js",
     "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js localhost 3001",
     "start:dev": "cross-env dotenv -e .env.local yarn server:start",
-    "start:dev-h": "cross-env dotenv -e .env.local-h yarn server:start",
+    "start:dev-render": "cross-env dotenv -e .env.local-render yarn server:start",
     "start:prod": "cross-env yarn server:start",
     "lint": "eslint \"{src,apps,client,test}/**/*.ts\"",
     "lint:fix": "eslint --fix \"{src,apps,client,test}/**/*.ts\"",

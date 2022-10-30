@@ -1,11 +1,14 @@
 import axios from "axios";
 import { IResource, INewFilm, INewFilmState } from "../types";
 
+const apiUrl = process.env.REACT_APP_API_URL || '';
+
+console.log('ServerUrl', apiUrl);
 export class CancelablePromise<PayloadType> extends Promise<PayloadType> {
   public cancel?: () => void
 }
 
-const filmsPath = "/api/films";
+const filmsPath = `${apiUrl}/api/films`;
 
 const fetchApi = {
   fetchFilms: async (): CancelablePromise<IResource[]> => {

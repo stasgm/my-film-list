@@ -3,14 +3,22 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import compression from 'compression';
 import 'dotenv/config';
 import pkg from 'mongodb';
+
 const { MongoClient, ObjectId } = pkg;
 
 const app = express();
 
+const corsOptions = {
+  origin: 'https://my-film-list.netlify.app/',
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+};
+
 app.set('port', process.env.PORT || 3030);
+app.set(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(compression());
 
