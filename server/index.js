@@ -12,8 +12,15 @@ const { MongoClient, ObjectId } = pkg;
 
 const app = express();
 
+const whitelist = ['https://my-film-list.netlify.app'];
 const corsOptions = {
-  origin: 'https://my-film-list.netlify.app/',
+  origin: (origin, callback) => {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error());
+    }
+  },
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
