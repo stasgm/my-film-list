@@ -44,7 +44,7 @@ const Loader = ({ error = false }: { error?: unknown }) => (
             : null}
         </p>
       ) : (
-        <p>Loading</p>
+        <p>Warming up the server...</p>
       )}
     </div>
   </div>
