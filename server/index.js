@@ -126,7 +126,7 @@ app.delete('/api/films/:id', async (req, res) => {
 
   const collection = req.app.locals.collection;
   try {
-    const id = ObjectId(req.params.id)u;
+    const id = ObjectId(req.params.id);
     const result = await collection.findOneAndDelete({ _id: id });
     const film = result.value;
     res.send(mapFilm(film));
