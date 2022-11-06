@@ -64,7 +64,7 @@ app.get('/api/films', async (req, res) => {
     const list = films.map((i) => mapFilm(i));
     res.send(list);
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err.message });
   }
 });
@@ -76,7 +76,7 @@ app.get('/api/films/:id', async (req, res) => {
     const film = await collection.findOne({ _id: id });
     res.send(mapFilm(film));
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err.message });
   }
 });
@@ -99,7 +99,7 @@ app.post('/api/films', jsonParser, async (req, res) => {
       ...newFilm,
     });
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err.message });
   }
 });
@@ -112,7 +112,7 @@ app.delete('/api/films/:id', async (req, res) => {
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err });
   }
 });
@@ -138,7 +138,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err });
   }
 });
@@ -157,7 +157,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.err(err);
+    console.error(err);
     res.send({ error: err });
   }
 });
