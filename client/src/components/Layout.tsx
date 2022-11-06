@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import FilmList from './Films';
 import FilmDialog from "./FilmDialog";
 import SearchPanel from './SearchPanel';
@@ -37,6 +37,9 @@ const Layout = () => {
     lsUtils.setItem('TypeFilter', typeFilter);
   }, [typeFilter]);
 
+  const filmsNumberText = useMemo(() => {
+    return `Films: ${filmCount?.data ? `${filmCount.data} total in base` : ' -'}`;
+  }, [filmCount.data]);
 
   return (
     <div className="min-h-screen sm:bg-gray-100">
@@ -44,7 +47,9 @@ const Layout = () => {
         <div id="header">
           <div className="tv:max-w-screen-2xl max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-2 sm:pt-4">
             <div className="flex place-content-between pb-4">
-              <h1 className="text-xl sm:text-2xl tv:text-4xl font-bold text-white">{`Films: ${filmCount.data} total in base`}</h1>
+              <h1 className="text-xl sm:text-2xl tv:text-4xl font-bold text-white">
+                {filmsNumberText}
+              </h1>
               <Button
                 className="px-2 py-0 border border-gray-300 text-sm tv:text-lg font-medium text-gray-900 rounded-lg hover:bg-gray-200 bg-gray-100"
                 onClick={handleOpenAddFilmDialog}
