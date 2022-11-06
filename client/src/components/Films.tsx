@@ -41,7 +41,7 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
 
   const filterableData = useMemo(
     () =>
-      films.data?.map<FilterableFilm>(film => ({ ...film, lowerCaseTitle: film.name.toLowerCase() })),
+      films.data?.map<FilterableFilm>(film => ({ ...film, lowerCaseTitle: film.name?.toLowerCase() })),
     [films.data]
   );
 
@@ -118,7 +118,7 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
     return <Loader error={films.error} />
   }
 
-  const Title = (value: string, row: FilterableFilm) => {
+  const Title = (value: string = '', row: FilterableFilm) => {
     const isMatching = hasMatchingText(row);
     const res = isMatching ? (
       <Highlighter

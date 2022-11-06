@@ -1,43 +1,78 @@
 'use strict';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// import path from 'path';
+// import { fileURLToPath } from 'url';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import compression from 'compression';
 import 'dotenv/config';
-import pkg from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
+import * as Sentry from '@sentry/node';
+import '@sentry/tracing';
 
-const { MongoClient, ObjectId } = pkg;
+Sentry.init({
+  dsn: 'https://f6a0bfa8dd75472d941432b0ca28f34d@o110716.ingest.sentry.io/4504113588404224',
+  enabled: process.env.NODE_ENV !== 'development',
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 const app = express();
 
-const corsOptions = {
-  origin: 'https://my-film-list.netlify.app',
-  optionsSuccessStatus: 200,
-};
-
+app.use(Sentry.Handlers.requestHandler());
 app.set('port', process.env.PORT || 3030);
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: 'https://my-film-list.netlify.app',
+    optionsSuccessStatus: 200,
+  }),
+);
 app.use(bodyParser.json());
 app.use(compression());
 
 const jsonParser = express.json();
 
-const mongoClient = new MongoClient(process.env.MONGO_URI || 'mongodb://localhost:27017', {
+const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017';
+
+const mongoClient = new MongoClient(mongoURI, {
   useNewUrlParser: true,
 });
 
 (async () => {
+  let span;
+  const transaction = Sentry.startTransaction({
+    op: 'Start server',
+    name: 'App',
+  });
+
   try {
+    span = transaction.startChild({
+      op: 'db',
+      description: 'mongo connect',
+    });
+
     await mongoClient.connect();
     app.locals.collection = mongoClient.db('films').collection('list');
-    console.log(`DB is connected: ${process.env.MONGO_URI}`);
+
+    span && span.finish();
+
+    span = transaction.startChild({
+      op: 'server',
+      description: 'run server',
+    });
 
     app.listen(app.get('port'));
-    console.log(`Server is listening on ${app.get('port')}`);
+    console.info('Server has been started');
+    console.log(` * MODE: ${process.env.NODE_ENV === 'development' ? 'development' : 'production'}`);
+    console.log(` * PORT: ${app.get('port')}`);
+    console.log(` * DB: ${mongoURI ? `${mongoURI}` : 'is not connected'}`);
   } catch (err) {
-    if (err) return console.log(err);
+    throw new Error('Server start error: ', err ? err : 'unknown error');
+  } finally {
+    span && span.finish();
+    transaction && transaction.finish();
   }
 })();
 
@@ -57,6 +92,11 @@ const mapFilm = (film) => {
 
 // API
 app.get('/api/films', async (req, res) => {
+  const transaction = Sentry.startTransaction({
+    name: '/api/films',
+    op: 'Get films list',
+  });
+
   const collection = req.app.locals.collection;
 
   try {
@@ -64,33 +104,60 @@ app.get('/api/films', async (req, res) => {
     const list = films.map((i) => mapFilm(i));
     res.send(list);
   } catch (err) {
-    console.error(err);
-    res.send({ error: err.message });
+    // console.error(err);
+    // res.send({ error: err.message });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
 app.get('/api/films/:id', async (req, res) => {
+  const transaction = Sentry.startTransaction({
+    name: '/api/films/:id',
+    op: 'Get film by id',
+    data: {
+      id: req.params.id,
+    },
+  });
+
+  const id = ObjectId(req.params.id);
+
   const collection = req.app.locals.collection;
   try {
-    const id = ObjectId(req.params.id);
     const film = await collection.findOne({ _id: id });
     res.send(mapFilm(film));
   } catch (err) {
-    console.error(err);
-    res.send({ error: err.message });
+    // console.error(err);
+    // res.send({ error: err.message });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
 app.post('/api/films', jsonParser, async (req, res) => {
-  if (!req.body) return res.sendStatus(400);
+  const newFilm = req.body
+    ? {
+        name: req.body.name,
+        url: req.body.url,
+        seen: req.body.seen || false,
+        type: req.body.type || 0,
+      }
+    : {
+        error: 'body is empty',
+      };
+
+  const transaction = Sentry.startTransaction({
+    name: '/api/films',
+    op: 'Add a new film',
+    data: newFilm,
+  });
+
+  if (!req.body) {
+    transaction && transaction.finish();
+    return res.sendStatus(400);
+  }
 
   const collection = req.app.locals.collection;
-  const newFilm = {
-    name: req.body.name,
-    url: req.body.url,
-    seen: req.body.seen || false,
-    type: req.body.type || 0,
-  };
 
   try {
     const result = await collection.insertOne(newFilm);
@@ -99,66 +166,110 @@ app.post('/api/films', jsonParser, async (req, res) => {
       ...newFilm,
     });
   } catch (err) {
-    console.error(err);
-    res.send({ error: err.message });
+    // console.error(err);
+    // res.send({ error: err.message });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
 app.delete('/api/films/:id', async (req, res) => {
+  const transaction = Sentry.startTransaction({
+    name: '/api/films',
+    op: 'Delete film',
+    data: {
+      id: req.params.id,
+    },
+  });
+
+  const id = ObjectId(req.params.id);
+
   const collection = req.app.locals.collection;
+
   try {
-    const id = ObjectId(req.params.id);
     const result = await collection.findOneAndDelete({ _id: id });
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.error(err);
-    res.send({ error: err });
+    // console.error(err);
+    // res.send({ error: err });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
-  if (!req.body) return res.sendStatus(400);
+  const filmData = req.body
+    ? {
+        name: req.body.name,
+        url: req.body.url,
+        seen: req.body.seen || false,
+        type: req.body.type || 0,
+      }
+    : {
+        error: 'body is empty',
+      };
+
+  const transaction = Sentry.startTransaction({
+    name: '/api/films/:id',
+    op: 'Update film',
+    data: { id: req.params.id, ...filmData },
+  });
+
+  if (!req.body) {
+    transaction && transaction.finish();
+    return res.sendStatus(400);
+  }
+
+  const id = ObjectId(req.params.id);
 
   const collection = req.app.locals.collection;
+
   try {
-    const id = ObjectId(req.params.id);
-    const result = await collection.findOneAndUpdate(
-      { _id: id },
-      {
-        $set: {
-          name: req.body.name,
-          url: req.body.url,
-          seen: req.body.seen,
-          type: req.body.type,
-        },
-      },
-      { returnDocument: 'after' },
-    );
+    const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.error(err);
-    res.send({ error: err });
+    // console.error(err);
+    // res.send({ error: err });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
 app.patch('/api/films/:id', jsonParser, async (req, res) => {
-  if (!req.body) return res.sendStatus(400);
+  const filmData = req.body
+    ? {
+        ...req.body,
+      }
+    : {
+        error: 'body is empty',
+      };
+
+  const transaction = Sentry.startTransaction({
+    name: '/api/films/:id',
+    op: 'Update film',
+    data: { id: req.params.id, ...filmData },
+  });
+
+  if (!req.body) {
+    transaction && transaction.finish();
+    return res.sendStatus(400);
+  }
+
+  const id = ObjectId(req.params.id);
 
   const collection = req.app.locals.collection;
+
   try {
-    const id = ObjectId(req.params.id);
-    const result = await collection.findOneAndUpdate(
-      { _id: id },
-      { $set: { ...req.body } },
-      { returnDocument: 'after' },
-    );
+    const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
     const film = result.value;
     res.send(mapFilm(film));
   } catch (err) {
-    console.error(err);
-    res.send({ error: err });
+    // console.error(err);
+    // res.send({ error: err });
+  } finally {
+    transaction && transaction.finish();
   }
 });
 
@@ -167,14 +278,24 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from server!' });
 });
 
+app.get('/debug-sentry', function mainHandler(req, res) {
+  throw new Error('Test Sentry error!');
+});
+
 // app.get('*', (req, res) => {
 //   res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
 // });
 
 // error handling
+app.use(Sentry.Handlers.errorHandler());
+
 app.use(function (err, req, res, next) {
   console.error(err.stack);
-  res.status(500).send(err);
+  const errorObj = {
+    error: err.message,
+    sentry: res.sentry,
+  };
+  res.status(500).json(errorObj);
 });
 
 process.on('SIGINT', async () => {
