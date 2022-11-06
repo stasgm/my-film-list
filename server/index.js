@@ -56,11 +56,7 @@ const mapFilm = (film) => {
 // app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // API
-// app.options('*', cors(corsOptions));
-
 app.get('/api/films', async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-
   const collection = req.app.locals.collection;
 
   try {
@@ -74,8 +70,6 @@ app.get('/api/films', async (req, res) => {
 });
 
 app.get('/api/films/:id', async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-
   const collection = req.app.locals.collection;
   try {
     const id = ObjectId(req.params.id);
@@ -88,8 +82,6 @@ app.get('/api/films/:id', async (req, res) => {
 });
 
 app.post('/api/films', jsonParser, async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-
   if (!req.body) return res.sendStatus(400);
 
   const collection = req.app.locals.collection;
@@ -113,8 +105,6 @@ app.post('/api/films', jsonParser, async (req, res) => {
 });
 
 app.delete('/api/films/:id', async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-
   const collection = req.app.locals.collection;
   try {
     const id = ObjectId(req.params.id);
@@ -128,8 +118,6 @@ app.delete('/api/films/:id', async (req, res) => {
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
-  // res.setHeader('Access-Control-Allow-Origin', '*');
-
   if (!req.body) return res.sendStatus(400);
 
   const collection = req.app.locals.collection;
@@ -157,8 +145,6 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 
 app.patch('/api/films/:id', jsonParser, async (req, res) => {
   if (!req.body) return res.sendStatus(400);
-
-  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   const collection = req.app.locals.collection;
   try {
