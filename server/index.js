@@ -12,15 +12,8 @@ const { MongoClient, ObjectId } = pkg;
 
 const app = express();
 
-const whitelist = ['https://my-film-list.netlify.app', 'https://my-film-list.netlify.app/'];
 const corsOptions = {
-  origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) === -1) {
-      const errorMessage = 'The CORS policy for this site does not allow access from the specified Origin.';
-      callback(new Error(errorMessage), false);
-    }
-    callback(null, true);
-  },
+  origin: 'https://my-film-list.netlify.app',
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -63,7 +56,7 @@ const mapFilm = (film) => {
 // app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // API
-app.options('/api/films/:id', cors(corsOptions));
+// app.options('*', cors(corsOptions));
 
 app.get('/api/films', async (req, res) => {
   // res.setHeader('Access-Control-Allow-Origin', '*');
