@@ -108,11 +108,10 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
       title: "Update the film status",
       message: `Are you sure you want to update the film status to ${status ? 'SEEN' : 'NOT SEEN'}?`,
       onOk: () => {
-        mutation.deleteFilm.mutate(id);
         mutation.updateFilmStatus.mutate({ id, status });
       }
     });
-  }, [mutation.deleteFilm, mutation.updateFilmStatus, openModal]);
+  }, [mutation.updateFilmStatus, openModal]);
 
 
   if (films.isError || !filteredData || !hasMatchingText) {
