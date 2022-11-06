@@ -15,11 +15,11 @@ const app = express();
 const whitelist = ['https://my-film-list.netlify.app', 'https://my-film-list.netlify.app/'];
 const corsOptions = {
   origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error());
+    if (whitelist.indexOf(origin) === -1) {
+      const errorMessage = 'The CORS policy for this site does not allow access from the specified Origin.';
+      callback(new Error(errorMessage), false);
     }
+    callback(null, true);
   },
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
@@ -65,6 +65,8 @@ const mapFilm = (film) => {
 app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // API
+app.options('/api/films/:id', cors(corsOptions));
+
 app.get('/api/films', async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -81,7 +83,7 @@ app.get('/api/films', async (req, res) => {
 });
 
 app.get('/api/films/:id', async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   const collection = req.app.locals.collection;
   try {
@@ -95,7 +97,7 @@ app.get('/api/films/:id', async (req, res) => {
 });
 
 app.post('/api/films', jsonParser, async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (!req.body) return res.sendStatus(400);
 
@@ -124,7 +126,7 @@ app.delete('/api/films/:id', async (req, res) => {
 
   const collection = req.app.locals.collection;
   try {
-    const id = ObjectId(req.params.id);
+    const id = ObjectId(req.params.id)u;
     const result = await collection.findOneAndDelete({ _id: id });
     const film = result.value;
     res.send(mapFilm(film));
@@ -135,9 +137,9 @@ app.delete('/api/films/:id', async (req, res) => {
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
-  if (!req.body) return res.sendStatus(400);
-
   res.setHeader('Access-Control-Allow-Origin', '*');
+
+  if (!req.body) return res.sendStatus(400);
 
   const collection = req.app.locals.collection;
   try {
