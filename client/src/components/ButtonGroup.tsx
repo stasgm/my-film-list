@@ -10,7 +10,7 @@ type ButtonGroupProps = { children: ReactElement[] }
 
 const ButtonGroup = ({ children }: ButtonGroupProps): JSX.Element => {
   return (
-    <div className="relative z-0 inline-flex shadow-sm rounded-md w-auto sm:grow-0 grow sm:mr-0 mr-3">
+    <div className="relative z-0 inline-flex shadow-sm rounded-md w-auto sm:grow-0 grow">
       <span className="flex w-full">
         {children.map((child, index) => {
           const isFirst = index === 0

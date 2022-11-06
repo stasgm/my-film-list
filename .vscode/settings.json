@@ -13,4 +13,7 @@
     "**/node_modules": true,
     ".vscode": true
   },
+  "[postcss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
 }

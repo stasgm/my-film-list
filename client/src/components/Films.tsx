@@ -1,41 +1,43 @@
-import { useMemo, useState, useCallback, useEffect } from 'react';
+import { useMemo, useCallback } from 'react';
 import { FilmIcon, TvIcon as SerialIcon } from '@heroicons/react/24/outline';
 import Highlighter from 'react-highlight-words';
-import Loader from './Loader';
-import Table from './Table';
-import { useFilms, useFilmMutations } from '../queries/queries';
-import { useModal } from './Modal';
-import { lsUtils } from '../utils';
 
-import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
-import SearchPanel from './SearchPanel';
 import ActionButton from './ActionButton';
 import FilmDialog from './FilmDialog';
-
-import '../styles/App.css';
 import FilmInfo from './FilmInfo';
+import Loader from './Loader';
+import Table from './Table';
+import { useModal } from './Modal';
+import { useFilms, useFilmMutations } from '../queries/queries';
+
+import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
 
 type FilterableFilm = IResource & { lowerCaseTitle: string };
 
-const FilmList = () => {
+interface IProps {
+  search: string;
+  statusFilter: StatusFilter;
+  typeFilter: ResourceTypeFilter;
+}
+
+const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   const { openModal, closeModal } = useModal();
 
   const films = useFilms();
   const mutation = useFilmMutations();
 
-  const [search, setSearch] = useState("");
+  const handleEditFilm = useCallback((id: string) => {
+    const filmEdit = films.data?.find(el => el.id === id);
 
-  const [statusFilter, setStatusFilter] = useState(lsUtils.getItem<StatusFilter>('StatusFilter', StatusFilter.watch));
+    if (!filmEdit) {
+      return;
+    }
 
-  const [typeFilter, setTypeFilter] = useState(lsUtils.getItem<ResourceTypeFilter>('TypeFilter', ResourceTypeFilter.serial));
-
-  useEffect(() => {
-    lsUtils.setItem('StatusFilter', statusFilter);
-  }, [statusFilter]);
-
-  useEffect(() => {
-    lsUtils.setItem('TypeFilter', typeFilter);
-  }, [typeFilter]);
+    openModal({
+      title: "Edit film",
+      component: <FilmDialog resource={filmEdit} onClose={closeModal} />,
+    });
+  }, [closeModal, films.data, openModal]);
 
   const filterableData = useMemo(
     () =>
@@ -77,19 +79,6 @@ const FilmList = () => {
 
     return { filteredData, hasMatchingText, searchTokens }
   }, [filterableData, search, statusFilter, typeFilter])
-
-  const handleEditFilm = useCallback((id: string) => {
-    const filmEdit = films.data?.find(el => el.id === id);
-
-    if (!filmEdit) {
-      return;
-    }
-
-    openModal({
-      title: "Edit film",
-      component: <FilmDialog resource={filmEdit} onClose={closeModal} />,
-    });
-  }, [closeModal, films.data, openModal]);
 
   const handleShowFilmInfo = useCallback((id: string) => {
     const filmEdit = films.data?.find(el => el.id === id);
@@ -197,26 +186,16 @@ const FilmList = () => {
     },
   ];
 
-
   return (
-    <>
-      <SearchPanel
-        setSearch={setSearch}
-        setStatusFilter={setStatusFilter}
-        statusFilter={statusFilter}
-        setTypeFilter={setTypeFilter}
-        typeFilter={typeFilter}
-      />
-      <div className="bg-white sm:rounded-lg shadow overflow-hidden min-h-96">
-        <Table columns={columns} dataRows={filteredData} rowKey="id" />
-        {(films.data?.length || 0) === 0 && (
-          <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
-        )}
-        {(films.data?.length || 0) > 0 && filteredData.length === 0 && (
-          <div className="px-6 py-3 text-center italic text-gray-700">No result found</div>
-        )}
-      </div>
-    </>
+    <div className="sm:bg-white sm:rounded-lg sm:shadow overflow-hidden">
+      <Table columns={columns} dataRows={filteredData} rowKey="id" />
+      {(films.data?.length || 0) === 0 && (
+        <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
+      )}
+      {(films.data?.length || 0) > 0 && filteredData.length === 0 && (
+        <div className="px-6 py-3 text-center italic text-gray-700">No result found</div>
+      )}
+    </div>
   )
 }
 

@@ -1,12 +1,21 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/index.css';
-import App from './components/App';
 import * as Sentry from "@sentry/react";
 import { BrowserTracing } from "@sentry/tracing";
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+// import { ReactQueryDevtools } from '@tanstack/react-query/devtools";
+import Layout from './components/Layout';
+import { ModalProvider } from './components/Modal';
+
 import reportWebVitals from './reportWebVitals';
 
+import './styles/index.css';
+
+console.info('process.env.NODE_ENV:', process.env.NODE_ENV);
+
 Sentry.init({
+  enabled: process.env.NODE_ENV !== 'development',
   dsn: "https://ed8829d7626949d8ad310c2ffa1ac677@o110716.ingest.sentry.io/4504051125846016",
   integrations: [new BrowserTracing()],
 
@@ -20,9 +29,16 @@ const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+const queryClient = new QueryClient();
+
 root.render(
   <React.StrictMode>
-    <App />
+    <QueryClientProvider client={queryClient}>
+      <ModalProvider>
+        <Layout />
+      </ModalProvider>
+      {/* <ReactQueryDevtools initialIsOpen /> */}
+    </QueryClientProvider>
   </React.StrictMode>
 );
 

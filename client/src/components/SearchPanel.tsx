@@ -1,7 +1,6 @@
 import { MagnifyingGlassIcon as SearchIcon } from '@heroicons/react/24/outline';
 import ButtonGroup from './ButtonGroup';
 
-import '../styles/App.css';
 import { ResourceTypeFilter, StatusFilter } from '../types';
 
 interface IProps {
@@ -12,17 +11,23 @@ interface IProps {
   setTypeFilter: (status: ResourceTypeFilter) => void;
 }
 
+const FilterLabel = ({ title, htmlFor }: { title: string, htmlFor: string }) => {
+  return (
+    <label
+      className="text-white sm:text-gray-600 sm:ml-4 sm:mr-4 font-semibold w-12 inline-block sm:w-auto sm:text-sm tv:text-lg mr-3"
+      htmlFor={htmlFor}
+    >
+      {title}
+    </label>
+  )
+}
+
 const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, setTypeFilter }: IProps) => {
   return (
-    <div className="bg-white sm:rounded-lg shadow overflow-hidden sm:mb-2 py-2">
-      <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
-        <label
-          className="text-gray-600 ml-4 mr-4 font-semibold w-12 inline-block sm:w-auto sm:text-sm tv:text-lg"
-          htmlFor="search"
-        >
-          Search
-        </label>
-        <div className="relative rounded-md shadow-sm inline-block grow sm:grow-0 sm:mr-0 mr-3">
+    <div className="sm:bg-gray-200 sm:rounded-lg sm:shadow overflow-hidden sm:py-2">
+      <div className="my-0 whitespace-nowrap sm:inline flex items-center w-full">
+        <FilterLabel title="Search" htmlFor="search" />
+        <div className="relative rounded-md shadow-sm inline-block grow sm:grow-0">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon className="h-6 w-6 text-gray-400" />
           </div>
@@ -37,12 +42,7 @@ const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, set
         </div>
       </div>
       <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
-        <label
-          className="text-gray-600 ml-4 mr-4 font-semibold w-12 inline-block sm:w-auto sm:text-sm tv:text-lg"
-          htmlFor="search"
-        >
-          Status
-        </label>
+        <FilterLabel title="Status" htmlFor="status" />
         <ButtonGroup>
           {/* Buttons use two handlers here: onClick for keyboard navigation, and onMouseDown for UI reactivity  */}
           <ButtonGroup.Button
@@ -69,12 +69,7 @@ const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, set
         </ButtonGroup>
       </div>
       <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
-        <label
-          className="text-gray-600 ml-4 mr-4 font-semibold w-12 inline-block sm:w-auto sm:text-sm tv:text-lg"
-          htmlFor="search"
-        >
-          Type
-        </label>
+        <FilterLabel title="Type" htmlFor="type" />
         <ButtonGroup>
           {/* Buttons use two handlers here: onClick for keyboard navigation, and onMouseDown for UI reactivity  */}
           <ButtonGroup.Button

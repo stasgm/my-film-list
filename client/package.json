@@ -1,8 +1,7 @@
 {
-  "name": "client",
+  "name": "my-film-list-client",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://localhost:3030",
   "dependencies": {
     "@headlessui/react": "^1.7.3",
     "@heroicons/react": "^2.0.12",

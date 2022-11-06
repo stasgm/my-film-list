@@ -1,12 +1,17 @@
-import { ReactNode, useCallback } from "react"
-import { useFilmsCount } from "../queries/queries";
+import { useState, useCallback, useEffect } from 'react';
+import FilmList from './Films';
 import FilmDialog from "./FilmDialog";
-import { Button } from "./ButtonGroup";
+import SearchPanel from './SearchPanel';
+import { Button } from './ButtonGroup';
 import { useModal } from "./Modal";
 
-type Props = { children: ReactNode }
+import { lsUtils } from '../utils';
+import { ResourceTypeFilter, StatusFilter, } from '../types';
+import { useFilmsCount } from '../queries/queries';
 
-const Layout = ({ children }: Props) => {
+// type FilterableFilm = IResource & { lowerCaseTitle: string };
+
+const Layout = () => {
   const filmCount = useFilmsCount();
   const { openModal, closeModal } = useModal();
 
@@ -17,24 +22,51 @@ const Layout = ({ children }: Props) => {
     });
   }, [closeModal, openModal]);
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="bg-green-900 pb-44 sm:pb-32">
-        <header className="pt-4 sm:pt-4">
-          <div className="tv:max-w-screen-2xl max-w-7xl mx-auto px-4 sm:px-2 lg:px-8 flex place-content-between">
-            <h1 className="text-xl sm:text-2xl tv:text-4xl font-bold text-white">{`Films: ${filmCount.data} total in base`}</h1>
-            <Button
-              className="px-2 py-0 border border-gray-300 text-sm tv:text-lg font-medium text-gray-900 rounded-lg hover:bg-gray-200 bg-gray-100"
-              onClick={handleOpenAddFilmDialog}
-            >
-              Add new film
-            </Button>
-          </div>
-        </header>
-      </div >
 
-      <main className="-mt-44 pt-4 sm:pt-3 sm:-mt-32">
-        <div className="tv:max-w-screen-2xl max-w-7xl mx-auto sm:pb-12 sm:px-2 lg:px-8">{children}</div>
+  const [search, setSearch] = useState("");
+
+  const [statusFilter, setStatusFilter] = useState(lsUtils.getItem<StatusFilter>('StatusFilter', StatusFilter.watch));
+
+  const [typeFilter, setTypeFilter] = useState(lsUtils.getItem<ResourceTypeFilter>('TypeFilter', ResourceTypeFilter.serial));
+
+  useEffect(() => {
+    lsUtils.setItem('StatusFilter', statusFilter);
+  }, [statusFilter]);
+
+  useEffect(() => {
+    lsUtils.setItem('TypeFilter', typeFilter);
+  }, [typeFilter]);
+
+
+  return (
+    <div className="min-h-screen sm:bg-gray-100">
+      <header className="bg-green-900 sm:pb-2 sticky top-0 z-30">
+        <div id="header">
+          <div className="tv:max-w-screen-2xl max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-2 sm:pt-4">
+            <div className="flex place-content-between pb-4">
+              <h1 className="text-xl sm:text-2xl tv:text-4xl font-bold text-white">{`Films: ${filmCount.data} total in base`}</h1>
+              <Button
+                className="px-2 py-0 border border-gray-300 text-sm tv:text-lg font-medium text-gray-900 rounded-lg hover:bg-gray-200 bg-gray-100"
+                onClick={handleOpenAddFilmDialog}
+              >
+                Add new film
+              </Button>
+            </div>
+            <SearchPanel
+              setSearch={setSearch}
+              setStatusFilter={setStatusFilter}
+              statusFilter={statusFilter}
+              setTypeFilter={setTypeFilter}
+              typeFilter={typeFilter}
+            />
+          </div>
+        </div>
+      </header>
+
+      <main className="sm:pt-4 sm:-mt-2" id="content">
+        <div className="tv:max-w-screen-2xl max-w-7xl mx-auto sm:pb-12 sm:px-2 lg:px-8">
+          <FilmList search={search} statusFilter={statusFilter} typeFilter={typeFilter} />
+        </div>
       </main>
     </div >
   )
