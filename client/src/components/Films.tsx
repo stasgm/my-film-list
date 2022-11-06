@@ -103,6 +103,18 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
     });
   }, [mutation.deleteFilm, openModal]);
 
+  const handleUpdatFilmeSeenStatus = useCallback((id: string, status: boolean) => {
+    openModal({
+      title: "Update the film status",
+      message: `Are you sure you want to update the film status to ${status ? 'SEEN' : 'NOT SEEN'}?`,
+      onOk: () => {
+        mutation.deleteFilm.mutate(id);
+        mutation.updateFilmStatus.mutate({ id, status });
+      }
+    });
+  }, [mutation.deleteFilm, mutation.updateFilmStatus, openModal]);
+
+
   if (films.isError || !filteredData || !hasMatchingText) {
     return <Loader error={films.error} />
   }
@@ -131,11 +143,9 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   };
 
   const Actions = (value: string, row: FilterableFilm) => {
-    const onClickSeen = () => mutation.updateFilmStatus.mutate({ id: row.id, status: !row.seen });
-
     return (
       <div className="flex justify-evenly m-1">
-        <ActionButton onClick={onClickSeen}>
+        <ActionButton onClick={() => handleUpdatFilmeSeenStatus(row.id, !row.seen)}>
           {row.seen ?
             (<>
               <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
