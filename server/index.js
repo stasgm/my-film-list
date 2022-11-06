@@ -14,11 +14,11 @@ const app = express();
 
 const corsOptions = {
   origin: 'https://my-film-list.netlify.app',
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
 app.set('port', process.env.PORT || 3030);
-app.set(cors(corsOptions));
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(compression());
 
