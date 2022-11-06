@@ -48,9 +48,6 @@ const mongoClient = new MongoClient(process.env.MONGO_URI || 'mongodb://localhos
   }
 })();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const mapFilm = (film) => {
   return {
     id: film._id,
@@ -61,14 +58,15 @@ const mapFilm = (film) => {
   };
 };
 
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // Serve static assets
-app.use(express.static(path.resolve(__dirname, '../client/build')));
+// app.use(express.static(path.resolve(__dirname, '../client/build')));
 
 // API
 app.options('/api/films/:id', cors(corsOptions));
 
 app.get('/api/films', async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   const collection = req.app.locals.collection;
 
@@ -122,7 +120,7 @@ app.post('/api/films', jsonParser, async (req, res) => {
 });
 
 app.delete('/api/films/:id', async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   const collection = req.app.locals.collection;
   try {
@@ -137,7 +135,7 @@ app.delete('/api/films/:id', async (req, res) => {
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   if (!req.body) return res.sendStatus(400);
 
@@ -167,7 +165,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 app.patch('/api/films/:id', jsonParser, async (req, res) => {
   if (!req.body) return res.sendStatus(400);
 
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   const collection = req.app.locals.collection;
   try {
@@ -190,9 +188,9 @@ app.get('/api', (req, res) => {
   res.json({ message: 'Hello from server!' });
 });
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
+// });
 
 // error handling
 app.use(function (err, req, res, next) {
