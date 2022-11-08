@@ -7,22 +7,17 @@ import cors from 'cors';
 import compression from 'compression';
 import 'dotenv/config';
 import { MongoClient, ObjectId } from 'mongodb';
-import * as Sentry from '@sentry/node';
-import '@sentry/tracing';
 
-Sentry.init({
-  dsn: 'https://f6a0bfa8dd75472d941432b0ca28f34d@o110716.ingest.sentry.io/4504113588404224',
-  enabled: process.env.NODE_ENV !== 'development',
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
+import errorHandler from './middleware/global-error-handler.js';
+import sentryAPM from './libraries/sentryApm.js';
+import { ApmHelper, ApmSpanType } from '../libraries/ApmHelper.js';
 
 const app = express();
-
-app.use(Sentry.Handlers.requestHandler());
+// Set up sentry APM
+sentryAPM(app);
+// add port
 app.set('port', process.env.PORT || 3030);
+// Enable CORS, security, compression, favicon and body parsing
 app.use(
   cors({
     origin: 'https://my-film-list.netlify.app',
@@ -31,6 +26,17 @@ app.use(
 );
 app.use(bodyParser.json());
 app.use(compression());
+app.use(
+  bodyParser.json({
+    limit: '1mb',
+  }),
+);
+app.use(
+  bodyParser.urlencoded({
+    extended: true,
+    limit: '50mb',
+  }),
+);
 
 const jsonParser = express.json();
 
@@ -41,38 +47,36 @@ const mongoClient = new MongoClient(mongoURI, {
 });
 
 (async () => {
+  const transaction = ApmHelper.startTransaction('Start application', ApmSpanType.SYSTEM);
+
   let span;
-  const transaction = Sentry.startTransaction({
-    op: 'Start server',
-    name: 'App',
-  });
-
   try {
-    span = transaction.startChild({
-      op: 'db',
-      description: 'mongo connect',
-    });
-
+    span = ApmHelper.startSpan('Mongo connection', ApmSpanType.SYSTEM, { transaction });
     await mongoClient.connect();
     app.locals.collection = mongoClient.db('films').collection('list');
+    ApmHelper.finishSpan(span);
 
-    span && span.finish();
+    // span = ApmHelper.startSpan('Run server', ApmSpanType.SYSTEM, { transaction });
 
-    span = transaction.startChild({
-      op: 'server',
-      description: 'run server',
-    });
-
-    app.listen(app.get('port'));
-    console.info('Server has been started');
-    console.log(` * MODE: ${process.env.NODE_ENV === 'development' ? 'development' : 'production'}`);
-    console.log(` * PORT: ${app.get('port')}`);
-    console.log(` * DB: ${mongoURI ? `${mongoURI}` : 'is not connected'}`);
+    ApmHelper.apmDecorator(
+      () => {
+        app.listen(app.get('port'));
+        console.info('Server has been started');
+        console.log(` * MODE: ${process.env.NODE_ENV === 'development' ? 'development' : 'production'}`);
+        console.log(` * PORT: ${app.get('port')}`);
+        console.log(` * DB: ${mongoURI ? `${mongoURI}` : 'is not connected'}`);
+      },
+      {
+        apmLabel: 'Run server',
+        apmType: ApmSpanType.SYSTEM,
+        transaction,
+      },
+    )();
   } catch (err) {
     throw new Error('Server start error: ', err ? err : 'unknown error');
   } finally {
-    span && span.finish();
-    transaction && transaction.finish();
+    ApmHelper.finishSpan(span);
+    ApmHelper.finishTransaction(transaction);
   }
 })();
 
@@ -92,23 +96,17 @@ const mapFilm = (film) => {
 
 // API
 app.get('/api/films', async (req, res) => {
-  const transaction = Sentry.startTransaction({
-    name: '/api/films',
-    op: 'Get films list',
-  });
+  // const transaction = Sentry.startTransaction({
+  //   name: '/api/films',
+  //   op: 'Get films list',
+  // });
 
   const collection = req.app.locals.collection;
 
-  try {
-    const films = await collection.find({}).toArray();
-    const list = films.map((i) => mapFilm(i));
-    res.send(list);
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err.message });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const films = await collection.find({}).toArray();
+  const list = films.map((i) => mapFilm(i));
+
+  res.send(list);
 });
 
 app.get('/api/films/:id', async (req, res) => {
@@ -287,19 +285,26 @@ app.get('/debug-sentry', function mainHandler(req, res) {
 // });
 
 // error handling
-app.use(Sentry.Handlers.errorHandler());
+// add global error handler
 
-app.use(function (err, req, res, next) {
-  console.error(err.stack);
-  const errorObj = {
-    error: err.message,
-    sentry: res.sentry,
-  };
-  res.status(500).json(errorObj);
-});
+app.use(
+  errorHandler({
+    sentryAPMClient: app.get('sentryAPMClient'),
+  }),
+);
+
+// app.use(function (err, req, res, next) {
+//   console.error(err.stack);
+//   const errorObj = {
+//     error: err.message,
+//     sentry: res.sentry,
+//   };
+//   res.status(500).json(errorObj);
+// });
 
 process.on('SIGINT', async () => {
   await mongoClient.close();
+  ApmHelper.getCurrentTransaction()?.finish();
   console.log('Application is closed');
   process.exit();
 });
