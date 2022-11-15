@@ -36,6 +36,7 @@
 - [ ]  add a spinner that indicates the progress of the action (edit\add\delete)
 - [ ]  add toast messages after successful\failed actions
 - [ ]  add button to show filter (disabled by default)
+- [ ]  show the number of the filtered items after 'total film' title
 
 ## Deployment
 
