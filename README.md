@@ -25,7 +25,7 @@
 - [x]  add filter by type
 - [x]  filters save in local storage
 - [ ]  for mobiles hide action buttons and show menu button with popup actions
-- [ ]  add sticky headers
+- [x]  add sticky headers
 - [ ]  add creation date time and sort by date\time
 - [ ]  add sort number and sort by sort number
 - [x]  for serials change icon
@@ -36,6 +36,7 @@
 - [ ]  add a spinner that indicates the progress of the action (edit\add\delete)
 - [ ]  add toast messages after successful\failed actions
 - [ ]  add button to show filter (disabled by default)
+- [ ]  show the number of the filtered items after 'total film' title
 
 ## Deployment
 
