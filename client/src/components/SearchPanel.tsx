@@ -2,10 +2,10 @@ import { MagnifyingGlassIcon as SearchIcon } from '@heroicons/react/24/outline';
 import ButtonGroup from './ButtonGroup';
 
 import { ResourceTypeFilter, StatusFilter } from '../types';
-
 interface IProps {
   statusFilter: StatusFilter;
   typeFilter: ResourceTypeFilter;
+  addNewFilm: () => void;
   setSearch: (text: string) => void;
   setStatusFilter: (status: StatusFilter) => void;
   setTypeFilter: (status: ResourceTypeFilter) => void;
@@ -22,12 +22,20 @@ const FilterLabel = ({ title, htmlFor }: { title: string, htmlFor: string }) => 
   )
 }
 
-const SearchPanel = ({ statusFilter, typeFilter, setStatusFilter, setSearch, setTypeFilter }: IProps) => {
+const SearchPanel = ({ statusFilter, typeFilter, addNewFilm, setStatusFilter, setSearch, setTypeFilter }: IProps) => {
   return (
-    <div className="sm:bg-gray-200 sm:rounded-lg sm:shadow overflow-hidden sm:py-2">
-      <div className="my-0 whitespace-nowrap sm:inline flex items-center w-full">
+    <div className="sm:bg-gray-200 sm:rounded-lg sm:shadow overflow-hidden py-0 sm:py-2">
+      <div className="whitespace-nowrap sm:inline items-center w-full relative rounded-md shadow-sm inline-block grow">
+        <ButtonGroup.Button
+          className="sm:ml-4 px-4 py-2 sm:w-40 w-full border text-sm tv:text-lg font-medium text-white rounded-lg hover:bg-green-700 bg-green-800"
+          onClick={addNewFilm}
+        >
+          Add new film
+        </ButtonGroup.Button>
+      </div>
+      <div className="my-2 whitespace-nowrap sm:inline flex items-center w-full">
         <FilterLabel title="Search" htmlFor="search" />
-        <div className="relative rounded-md shadow-sm inline-block grow sm:grow-0">
+        <div className="relative rounded-md shadow-sm inline-block grow sm:grow-0 w-max">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <SearchIcon className="h-6 w-6 text-gray-400" />
           </div>

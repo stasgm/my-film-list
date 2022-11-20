@@ -1,6 +1,4 @@
 'use strict';
-// import path from 'path';
-// import { fileURLToPath } from 'url';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -11,6 +9,7 @@ import { MongoClient, ObjectId } from 'mongodb';
 import errorHandler from './middleware/global-error-handler.js';
 import sentryAPM from './libraries/sentryApm.js';
 import { ApmHelper, ApmSpanType } from '../libraries/ApmHelper.js';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 const app = express();
 // Set up sentry APM
@@ -24,6 +23,7 @@ app.use(
     optionsSuccessStatus: 200,
   }),
 );
+
 app.use(bodyParser.json());
 app.use(compression());
 app.use(
@@ -35,6 +35,16 @@ app.use(
   bodyParser.urlencoded({
     extended: true,
     limit: '50mb',
+  }),
+);
+
+const issuerBaseURL = 'https://dev-gx2k5dlw.us.auth0.com';
+const audience = 'https://dev-gx2k5dlw.us.auth0.com/api/v2/';
+
+app.use(
+  auth({
+    issuerBaseURL,
+    audience,
   }),
 );
 
@@ -55,8 +65,6 @@ const mongoClient = new MongoClient(mongoURI, {
     await mongoClient.connect();
     app.locals.collection = mongoClient.db('films').collection('list');
     ApmHelper.finishSpan(span);
-
-    // span = ApmHelper.startSpan('Run server', ApmSpanType.SYSTEM, { transaction });
 
     ApmHelper.apmDecorator(
       () => {
@@ -90,16 +98,12 @@ const mapFilm = (film) => {
   };
 };
 
-// const __dirname = path.dirname(fileURLToPath(import.meta.url));
-// Serve static assets
-// app.use(express.static(path.resolve(__dirname, '../client/build')));
-
 // API
 app.get('/api/films', async (req, res) => {
-  // const transaction = Sentry.startTransaction({
-  //   name: '/api/films',
-  //   op: 'Get films list',
-  // });
+  // req.auth.payload.sub;
+  // req.user
+  const transaction = ApmHelper.startTransaction('Get films', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
 
   const collection = req.app.locals.collection;
 
@@ -107,32 +111,32 @@ app.get('/api/films', async (req, res) => {
   const list = films.map((i) => mapFilm(i));
 
   res.send(list);
+
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 app.get('/api/films/:id', async (req, res) => {
-  const transaction = Sentry.startTransaction({
-    name: '/api/films/:id',
-    op: 'Get film by id',
-    data: {
-      id: req.params.id,
-    },
-  });
-
+  const transaction = ApmHelper.startTransaction('Get film by id', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
+  //   data: {
+  //   id: req.params.id,
+  // },
   const id = ObjectId(req.params.id);
 
   const collection = req.app.locals.collection;
-  try {
-    const film = await collection.findOne({ _id: id });
-    res.send(mapFilm(film));
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err.message });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const film = await collection.findOne({ _id: id });
+
+  res.send(mapFilm(film));
+
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 app.post('/api/films', jsonParser, async (req, res) => {
+  const transaction = ApmHelper.startTransaction('Add a new film', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
+
   const newFilm = req.body
     ? {
         name: req.body.name,
@@ -144,59 +148,44 @@ app.post('/api/films', jsonParser, async (req, res) => {
         error: 'body is empty',
       };
 
-  const transaction = Sentry.startTransaction({
-    name: '/api/films',
-    op: 'Add a new film',
-    data: newFilm,
-  });
-
   if (!req.body) {
-    transaction && transaction.finish();
+    ApmHelper.finishSpan(span);
+    ApmHelper.finishTransaction(transaction);
     return res.sendStatus(400);
   }
 
   const collection = req.app.locals.collection;
 
-  try {
-    const result = await collection.insertOne(newFilm);
-    res.send({
-      id: result.insertedId,
-      ...newFilm,
-    });
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err.message });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const result = await collection.insertOne(newFilm);
+
+  res.send({
+    id: result.insertedId,
+    ...newFilm,
+  });
+
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 app.delete('/api/films/:id', async (req, res) => {
-  const transaction = Sentry.startTransaction({
-    name: '/api/films',
-    op: 'Delete film',
-    data: {
-      id: req.params.id,
-    },
-  });
+  const transaction = ApmHelper.startTransaction('Delete film', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
 
   const id = ObjectId(req.params.id);
 
   const collection = req.app.locals.collection;
 
-  try {
-    const result = await collection.findOneAndDelete({ _id: id });
-    const film = result.value;
-    res.send(mapFilm(film));
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const result = await collection.findOneAndDelete({ _id: id });
+  const film = result.value;
+  res.send(mapFilm(film));
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
+  const transaction = ApmHelper.startTransaction('Update film', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
+
   const filmData = req.body
     ? {
         name: req.body.name,
@@ -208,14 +197,10 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
         error: 'body is empty',
       };
 
-  const transaction = Sentry.startTransaction({
-    name: '/api/films/:id',
-    op: 'Update film',
-    data: { id: req.params.id, ...filmData },
-  });
-
   if (!req.body) {
-    transaction && transaction.finish();
+    ApmHelper.finishSpan(span);
+    ApmHelper.finishTransaction(transaction);
+
     return res.sendStatus(400);
   }
 
@@ -223,19 +208,18 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  try {
-    const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
-    const film = result.value;
-    res.send(mapFilm(film));
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
+  const film = result.value;
+  res.send(mapFilm(film));
+
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 app.patch('/api/films/:id', jsonParser, async (req, res) => {
+  const transaction = ApmHelper.startTransaction('Update film', ApmSpanType.API_REQUEST);
+  const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
+
   const filmData = req.body
     ? {
         ...req.body,
@@ -244,14 +228,10 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
         error: 'body is empty',
       };
 
-  const transaction = Sentry.startTransaction({
-    name: '/api/films/:id',
-    op: 'Update film',
-    data: { id: req.params.id, ...filmData },
-  });
-
   if (!req.body) {
-    transaction && transaction.finish();
+    ApmHelper.finishSpan(span);
+    ApmHelper.finishTransaction(transaction);
+
     return res.sendStatus(400);
   }
 
@@ -259,16 +239,13 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  try {
-    const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
-    const film = result.value;
-    res.send(mapFilm(film));
-  } catch (err) {
-    // console.error(err);
-    // res.send({ error: err });
-  } finally {
-    transaction && transaction.finish();
-  }
+  const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
+  const film = result.value;
+
+  res.send(mapFilm(film));
+
+  ApmHelper.finishSpan(span);
+  ApmHelper.finishTransaction(transaction);
 });
 
 // Handle GET requests to /api route

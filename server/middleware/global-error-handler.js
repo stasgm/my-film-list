@@ -3,14 +3,13 @@ export default function ({ sentryAPMClient }) {
     if (sentryAPMClient) {
       sentryAPMClient.Handlers.errorHandler();
     }
-
     // if (!error.traceId) {
     //   error.traceId = domainUtils.generateTraceId();
     // }
 
-    const errorCode = error.errorCode || 'TechnicalBackendError';
+    const errorCode = error.code || error.errorCode || 'TechnicalBackendError';
 
-    const httpStatusCode = error.httpStatusCode ? error.httpStatusCode : 500;
+    const httpStatusCode = error.statusCode || error.httpStatusCode || 500;
     // const context = HttpContextHelper.extractContext(req);
 
     // log.logError(error, error.message, context);

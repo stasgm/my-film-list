@@ -43,13 +43,15 @@ const Modal = ({ children, title, message, onOk, onCancel }: IModalProps): JSX.E
               <div className="text-center sm:mt-0 sm:text-left">
                 <h3 className="text-lg leading-6 font-semibold uppercase text-gray-900">{title || "Alert"}</h3>
                 {/* </div> */}
-                {message && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">{message}</p>
-                  </div>)}
               </div>
             </div>
             {/* body */}
+            <div className="px-4 pt-2 pb-4 sm:p-4 sm:pb-4 sm:pt-2 rounded-t">
+              {message && (
+                <div className="mt-2">
+                  <p className="text-sm sm:text-lg text-gray-500">{message}</p>
+                </div>)}
+            </div>
             {/*footer*/}
             {children ? children : (
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row justify-end rounded-b border-slate-200">

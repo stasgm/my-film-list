@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { CancelToken } from "axios";
 import { IResource, INewFilm, INewFilmState } from "../types";
 
 const apiUrl = process.env.REACT_APP_API_URL || '';
@@ -10,12 +10,32 @@ export class CancelablePromise<PayloadType> extends Promise<PayloadType> {
 
 const filmsPath = `${apiUrl}/api/films`;
 
+const axiosClient = axios.create({
+  baseURL: apiUrl,
+});
+
+axiosClient.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  async (error) => {
+    const originalRequest = error.config;
+    const errMessage = error.response.data.message as string;
+    if (errMessage.includes('Unauthorized') && !originalRequest._retry) {
+      // originalRequest._retry = true;
+      // await refreshAccessTokenFn();
+      // return authApi(originalRequest);
+    }
+    return Promise.reject(error);
+  }
+);
+
 const fetchApi = {
   fetchFilms: async (): CancelablePromise<IResource[]> => {
     const controller = new AbortController()
     const data: CancelablePromise<IResource[]> = (async () => {
       try {
-        const { data } = await axios.get(filmsPath);
+        const { data } = await axiosClient.get(`${filmsPath}`);
         return data;
       } catch (err) {
         return [];

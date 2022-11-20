@@ -1,23 +1,24 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { InformationCircleIcon, LinkIcon } from '@heroicons/react/20/solid';
 import { useFilmMutations } from '../queries/queries';
-import { IResource, IResourceType } from '../types';
+import { IResource, IResourceType, ResourceTypeFilter } from '../types';
 import { isResource } from '../utils';
 import { Button } from './ButtonGroup';
 
 interface IProps {
   resource?: IResource;
+  type?: ResourceTypeFilter;
   onClose: () => void;
 }
 
-const FilmDialog = ({ resource, onClose }: IProps) => {
+const FilmDialog = ({ type, resource, onClose }: IProps) => {
   const initialState: IResource = useMemo(() => ({
     id: '',
     seen: false,
     name: '',
     url: '',
-    type: IResourceType.film
-  }), []);
+    type: (type === ResourceTypeFilter.all ? ResourceTypeFilter.film : type) as unknown as IResourceType
+  }), [type]);
 
   const [tmpFilm, setTmpFilm] = useState<IResource>(initialState);
 

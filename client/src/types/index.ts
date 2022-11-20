@@ -1,6 +1,6 @@
 export enum IResourceType {
-  'film',
-  'serial'
+  'film' = 0,
+  'serial' = 1
 }
 
 export interface ISerialInfo {
@@ -50,7 +50,7 @@ export enum StatusFilter {
 };
 
 export enum ResourceTypeFilter {
-  'all',
-  'film',
-  'serial',
+  'all' = -1,
+  'film' = 0,
+  'serial' = 1,
 };

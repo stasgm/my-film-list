@@ -4,9 +4,9 @@ import { fetchApi } from '../services/api';
 
 const useFilmsQuery = <T>(select: (data: IResource[]) => T) => useQuery(['films'], fetchApi.fetchFilms, { select });
 
-const useFilmsCount = () => useFilmsQuery((data) => data.length);
 const useFilms = () => useFilmsQuery((films) => films);
-const useFilm = (id?: string) => useFilmsQuery((data) => data.find((films) => films.id === id));
+// const useFilm = (userId?: number, id?: string) => useFilmsQuery((data) => data.find((films) => films.id === id));
+const useFilm = (filmId: string) => useQuery(['films', filmId], () => fetchApi.fetchFilm(filmId));
 
 const useFilmMutations = () => {
   const queryClient = useQueryClient();
@@ -102,4 +102,4 @@ const useFilmMutations = () => {
   return { updateFilmStatus, addFilm, updateFilm, deleteFilm };
 };
 
-export { useFilms, useFilmsCount, useFilm, useFilmMutations }
+export { useFilms, useFilm, useFilmMutations }
