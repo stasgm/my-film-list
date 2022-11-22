@@ -15,7 +15,7 @@
     "client:start": "cd client && yarn start",
     "build": "cd client && yarn install && yarn build",
     "server:start": "node server/index.js",
-    "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js localhost 3001",
+    "server:dev-mon": "cross-env dotenv -e .env.local nodemon server/index.js",
     "start:dev": "cross-env dotenv -e .env.local yarn server:start",
     "start:dev-render": "cross-env dotenv -e .env.local-render yarn server:start",
     "start:prod": "cross-env yarn server:start",
@@ -36,7 +36,8 @@
     "express": "^4.18.2",
     "http-proxy-middleware": "^2.0.6",
     "mongodb": "^4.11.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "express-oauth2-jwt-bearer": "^1.2.0"
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.6",

@@ -11,7 +11,7 @@ import { useModal } from './Modal';
 import { useFilms, useFilmMutations } from '../queries/queries';
 
 import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
-
+// import { useToken } from '../hooks';
 type FilterableFilm = IResource & { lowerCaseTitle: string };
 
 interface IProps {
@@ -22,9 +22,11 @@ interface IProps {
 
 const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   const { openModal, closeModal } = useModal();
-
-  const films = useFilms();
   const mutation = useFilmMutations();
+
+  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
+  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
+  const films = useFilms();
 
   const handleEditFilm = useCallback((id: string) => {
     const filmEdit = films.data?.find(el => el.id === id);
@@ -79,6 +81,10 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
 
     return { filteredData, hasMatchingText, searchTokens }
   }, [filterableData, search, statusFilter, typeFilter])
+
+  const filmsNumberText = useMemo(() => {
+    return `${filteredData?.length} records in base`;
+  }, [filteredData?.length]);
 
   const handleShowFilmInfo = useCallback((id: string) => {
     const filmEdit = films.data?.find(el => el.id === id);
@@ -196,15 +202,24 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   ];
 
   return (
-    <div className="sm:bg-white sm:rounded-lg sm:shadow overflow-hidden">
-      <Table columns={columns} dataRows={filteredData} rowKey="id" />
-      {(films.data?.length || 0) === 0 && (
-        <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
-      )}
-      {(films.data?.length || 0) > 0 && filteredData.length === 0 && (
-        <div className="px-6 py-3 text-center italic text-gray-700">No result found</div>
-      )}
-    </div>
+    <>
+      <div className="my-1 items-center ml-4">
+        <label
+          className="text-gray-600 font-semibold sm:text-sm tv:text-lg"
+        >
+          {filmsNumberText}
+        </label>
+      </div>
+      <div className="sm:bg-white sm:rounded-lg sm:shadow overflow-hidden">
+        <Table columns={columns} dataRows={filteredData} rowKey="id" />
+        {(films.data?.length || 0) === 0 && (
+          <div className="px-6 py-3 text-center italic text-gray-700">Your film list is empty</div>
+        )}
+        {(films.data?.length || 0) > 0 && filteredData.length === 0 && (
+          <div className="px-6 py-3 text-center italic text-gray-700">No result found</div>
+        )}
+      </div>
+    </>
   )
 }
 

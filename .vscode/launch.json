@@ -8,32 +8,14 @@
       "program": "${file}"
     },
     {
-      "name": "Launch Server",
-      "type": "pwa-node",
-      "request": "launch",
-      "skipFiles": [
-          "<node_internals>/**"
-      ],
-      "program": "${workspaceFolder}/server/index.js"
-    },
-    {
+      "name": "Start server",
       "type": "node",
       "request": "launch",
-      "name": "Debug server Framework",
-      "args": ["${workspaceFolder}/src/main.ts"],
-      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
-      "sourceMaps": true,
-      "cwd": "${workspaceRoot}"
-    },
-    {
-      // Use this one if you're already running `yarn watch`
-      "type": "node",
-      "request": "launch",
-      "name": "Debug Active Spec (no build)",
-      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/ava",
-      "runtimeArgs": ["debug", "--break", "--serial", "${file}"],
-      "outputCapture": "std",
-      "skipFiles": ["<node_internals>/**/*.js"]
-      // "smartStep": true
-    }]
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "server:start"
+      ]
+    }
+  ]
 }

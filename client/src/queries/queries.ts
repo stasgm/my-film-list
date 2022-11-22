@@ -1,29 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { IResource } from "../types";
-import { fetchApi } from '../services/api';
+import { filmsApi } from '../services/apiFilms';
 
-const useFilmsQuery = <T>(select: (data: IResource[]) => T) => useQuery(['films'], fetchApi.fetchFilms, { select });
+const useFilmsQuery = <T>(select: (data: IResource[]) => T) => useQuery(['films'], filmsApi.fetchFilms, { select });
 
-const useFilmsCount = () => useFilmsQuery((data) => data.length);
 const useFilms = () => useFilmsQuery((films) => films);
-const useFilm = (id?: string) => useFilmsQuery((data) => data.find((films) => films.id === id));
+
+const useFilm = (filmId: string) => useQuery(['films', filmId], () => filmsApi.fetchFilm(filmId));
 
 const useFilmMutations = () => {
   const queryClient = useQueryClient();
 
-  const addFilm = useMutation(fetchApi.addFilm, {
+  const addFilm = useMutation(filmsApi.addFilm, {
     onSuccess: () => {
       queryClient.invalidateQueries(['films']);
     }
   });
 
-  const updateFilm = useMutation(fetchApi.updateFilm, {
+  const updateFilm = useMutation(filmsApi.updateFilm, {
     onSuccess: () => {
       queryClient.invalidateQueries(['films']);
     }
   });
 
-  const deleteFilm = useMutation(fetchApi.deleteFilm, {
+  const deleteFilm = useMutation(filmsApi.deleteFilm, {
     onSuccess: () => {
       queryClient.invalidateQueries(['films']);
     }
@@ -31,7 +31,7 @@ const useFilmMutations = () => {
 
 
   // const addFilm = useMutation(
-  //   (film: IResource) => fetchApi.addFilm(film),
+  //   (film: IResource) => filmsApi.addFilm(film),
   //   {
   //     onMutate: async (film) => {
   //       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
@@ -53,20 +53,20 @@ const useFilmMutations = () => {
   //   }
   // );
 
-  const updateFilmStatus = useMutation(fetchApi.updateStatus, {
+  const updateFilmStatus = useMutation(filmsApi.updateStatus, {
     onSuccess: () => {
       queryClient.invalidateQueries(['films']);
     }
   });
 
-  // const updateFilmStatus = useMutation((filmState: INewFilmState) => fetchApi.updateStatus(filmState.id, filmState.newStatus), {
+  // const updateFilmStatus = useMutation((filmState: INewFilmState) => filmsApi.updateStatus(filmState.id, filmState.newStatus), {
   //   onSuccess: (data, variables) => {
   //     queryClient.setQueryData(['todo', { id: variables.id }], data)
   //   },
   // })
 
   // const updateFilmStatus = useMutation(
-  //   ({ id, newStatus }: { id: string, newStatus: boolean }) => fetchApi.updateStatus(id, newStatus),
+  //   ({ id, newStatus }: { id: string, newStatus: boolean }) => filmsApi.updateStatus(id, newStatus),
   //   {
   //     onMutate: async (filmStatus) => {
   //       // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
@@ -102,4 +102,4 @@ const useFilmMutations = () => {
   return { updateFilmStatus, addFilm, updateFilm, deleteFilm };
 };
 
-export { useFilms, useFilmsCount, useFilm, useFilmMutations }
+export { useFilms, useFilm, useFilmMutations }

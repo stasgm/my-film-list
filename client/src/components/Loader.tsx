@@ -1,4 +1,4 @@
-import { FetchError } from "../services/api"
+import { FetchError } from "../services/apiFilms"
 
 const Loader = ({ error = false }: { error?: unknown }) => (
   <div
