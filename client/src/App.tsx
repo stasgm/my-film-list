@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Routes,
   Route,
@@ -9,6 +10,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import Profile from "./pages/Profile";
 import Loader from "./components/Loader";
 import Layout from "./components/Layout";
+import { lsUtils } from './utils';
+
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { isLoading, error, user } = useAuth0();
@@ -30,6 +33,21 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 }
 
 const App = () => {
+  const { getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const audience = process.env.REACT_APP_AUDIENCE!;
+        const scope = ""
+        const accessToken = await getAccessTokenSilently({ audience, scope });
+        lsUtils.setToken(accessToken);
+      } catch (err) {
+        console.log(err);
+      }
+    })();
+  }, [getAccessTokenSilently]);
+
   return (
     <Routes>
       <Route path="/" element={<Layout />} />

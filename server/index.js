@@ -11,11 +11,17 @@ import sentryAPM from './libraries/sentryApm.js';
 import { ApmHelper, ApmSpanType } from '../libraries/ApmHelper.js';
 import { auth } from 'express-oauth2-jwt-bearer';
 
+const { DOMAIN, AUDIENCE, PORT = 3030 } = process.env;
+
 const app = express();
+
+if (!DOMAIN || !AUDIENCE) {
+  throw new Error('Please make sure that DOMAIN and AUDIENCE is set in your ENV');
+}
 // Set up sentry APM
 sentryAPM(app);
 // add port
-app.set('port', process.env.PORT || 3030);
+app.set('port', process.env.PORT);
 // Enable CORS, security, compression, favicon and body parsing
 app.use(
   cors({
@@ -38,13 +44,10 @@ app.use(
   }),
 );
 
-const issuerBaseURL = 'https://dev-gx2k5dlw.us.auth0.com';
-const audience = 'https://dev-gx2k5dlw.us.auth0.com/api/v2/';
-
 app.use(
   auth({
-    issuerBaseURL,
-    audience,
+    issuerBaseURL: `https://${DOMAIN}/`,
+    audience: AUDIENCE,
   }),
 );
 

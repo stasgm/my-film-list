@@ -11,8 +11,7 @@ import { useModal } from './Modal';
 import { useFilms, useFilmMutations } from '../queries/queries';
 
 import { IResource, IResourceType, ResourceTypeFilter, StatusFilter, } from '../types';
-import { useAuth0 } from '@auth0/auth0-react';
-
+// import { useToken } from '../hooks';
 type FilterableFilm = IResource & { lowerCaseTitle: string };
 
 interface IProps {
@@ -23,9 +22,11 @@ interface IProps {
 
 const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   const { openModal, closeModal } = useModal();
-
-  const films = useFilms();
   const mutation = useFilmMutations();
+
+  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
+  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
+  const films = useFilms();
 
   const handleEditFilm = useCallback((id: string) => {
     const filmEdit = films.data?.find(el => el.id === id);

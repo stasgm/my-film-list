@@ -1,4 +1,6 @@
 class LocalStorageService {
+  public storagePrefix = "MY_FILM_LIST-";
+
   setItem(key: string, value: any): void {
     localStorage.setItem(key, JSON.stringify({ value }));
   }
@@ -30,6 +32,18 @@ class LocalStorageService {
   key(index: number): string | null {
     return localStorage.key(index);
   }
-}
+
+  getToken(): string {
+    return JSON.parse(this.getItem(`${this.storagePrefix}token`) as string);
+  }
+
+  setToken(token: string): void {
+    this.setItem(`${this.storagePrefix}token`, JSON.stringify(token));
+  }
+
+  clearToken(): void {
+    this.removeItem(`${this.storagePrefix}token`);
+  }
+};
 
 export const lsUtils = new LocalStorageService();
