@@ -93,15 +93,16 @@ export const ApmHelper = {
     // apm rum isEnabled, apm agent isStarted()
     // return apm ? (apm.isEnabled !== undefined ? apm.isEnabled : apm.isStarted()) : false;
   },
-  startSpan(name, type = ApmSpanType.UNKNOWN, { transaction } = {}) {
+  startSpan(name, type = ApmSpanType.UNKNOWN, { transaction, data = {} } = {}) {
     if (this.isEnabled()) {
       if (transaction && transaction.endTimestamp) {
         return fallbackRetObj;
       }
 
       const span = transaction
-        ? transaction.startChild({ description: name, op: type })
+        ? transaction.startChild({ description: name, op: type, data })
         : this.startTransaction(name, type);
+
       return span ? span : fallbackRetObj;
     }
     return fallbackRetObj;

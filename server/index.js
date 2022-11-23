@@ -21,7 +21,7 @@ if (!DOMAIN || !AUDIENCE) {
 // Set up sentry APM
 sentryAPM(app);
 // add port
-app.set('port', process.env.PORT);
+app.set('port', PORT);
 // Enable CORS, security, compression, favicon and body parsing
 app.use(
   cors({
@@ -103,14 +103,18 @@ const mapFilm = (film) => {
 
 // API
 app.get('/api/films', async (req, res) => {
-  // req.auth.payload.sub;
-  // req.user
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Get films', ApmSpanType.API_REQUEST);
-  const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
+  const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, {
+    transaction,
+    data: {
+      userId,
+    },
+  });
 
   const collection = req.app.locals.collection;
 
-  const films = await collection.find({}).toArray();
+  const films = await collection.find({ userId }).toArray();
   const list = films.map((i) => mapFilm(i));
 
   res.send(list);
@@ -120,15 +124,19 @@ app.get('/api/films', async (req, res) => {
 });
 
 app.get('/api/films/:id', async (req, res) => {
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Get film by id', ApmSpanType.API_REQUEST);
-  const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
-  //   data: {
-  //   id: req.params.id,
-  // },
+  const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, {
+    transaction,
+    data: {
+      userId,
+    },
+  });
+
   const id = ObjectId(req.params.id);
 
   const collection = req.app.locals.collection;
-  const film = await collection.findOne({ _id: id });
+  const film = await collection.findOne({ _id: id, userId });
 
   res.send(mapFilm(film));
 
@@ -137,6 +145,7 @@ app.get('/api/films/:id', async (req, res) => {
 });
 
 app.post('/api/films', jsonParser, async (req, res) => {
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Add a new film', ApmSpanType.API_REQUEST);
   const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
 
@@ -146,6 +155,7 @@ app.post('/api/films', jsonParser, async (req, res) => {
         url: req.body.url,
         seen: req.body.seen || false,
         type: req.body.type || 0,
+        userId,
       }
     : {
         error: 'body is empty',
@@ -171,6 +181,7 @@ app.post('/api/films', jsonParser, async (req, res) => {
 });
 
 app.delete('/api/films/:id', async (req, res) => {
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Delete film', ApmSpanType.API_REQUEST);
   const span = ApmHelper.startSpan('/api/films', ApmSpanType.API_REQUEST, { transaction });
 
@@ -178,7 +189,7 @@ app.delete('/api/films/:id', async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  const result = await collection.findOneAndDelete({ _id: id });
+  const result = await collection.findOneAndDelete({ _id: id, userId });
   const film = result.value;
   res.send(mapFilm(film));
   ApmHelper.finishSpan(span);
@@ -186,6 +197,7 @@ app.delete('/api/films/:id', async (req, res) => {
 });
 
 app.put('/api/films/:id', jsonParser, async (req, res) => {
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Update film', ApmSpanType.API_REQUEST);
   const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
 
@@ -195,6 +207,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
         url: req.body.url,
         seen: req.body.seen || false,
         type: req.body.type || 0,
+        userId,
       }
     : {
         error: 'body is empty',
@@ -211,7 +224,11 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
+  const result = await collection.findOneAndUpdate(
+    { _id: id, userId },
+    { $set: filmData },
+    { returnDocument: 'after' },
+  );
   const film = result.value;
   res.send(mapFilm(film));
 
@@ -220,6 +237,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 });
 
 app.patch('/api/films/:id', jsonParser, async (req, res) => {
+  const userId = req.auth.payload.sub;
   const transaction = ApmHelper.startTransaction('Update film', ApmSpanType.API_REQUEST);
   const span = ApmHelper.startSpan('/api/films/:id', ApmSpanType.API_REQUEST, { transaction });
 
@@ -242,7 +260,11 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  const result = await collection.findOneAndUpdate({ _id: id }, { $set: filmData }, { returnDocument: 'after' });
+  const result = await collection.findOneAndUpdate(
+    { _id: id, userId },
+    { $set: filmData },
+    { returnDocument: 'after' },
+  );
   const film = result.value;
 
   res.send(mapFilm(film));
@@ -253,7 +275,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
 
 // Handle GET requests to /api route
 app.get('/api', (req, res) => {
-  res.json({ message: 'Hello from server!' });
+  res.json({ message: 'My film list server' });
 });
 
 app.get('/debug-sentry', function mainHandler(req, res) {

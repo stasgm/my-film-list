@@ -14,7 +14,17 @@
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "yarn",
       "runtimeArgs": [
-        "server:start"
+        "start:server"
+      ]
+    },
+    {
+      "name": "Debug server",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": [
+        "start:dev"
       ]
     }
   ]
