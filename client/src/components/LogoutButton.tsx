@@ -1,10 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react';
+import { lsUtils } from '../utils';
 import { Button } from './ButtonGroup';
 
 const LogoutButton = () => {
   const { logout } = useAuth0();
 
   const logoutWithRedirect = () => {
+    lsUtils.clearToken();
+
     return logout({
       returnTo: window.location.origin,
     });
