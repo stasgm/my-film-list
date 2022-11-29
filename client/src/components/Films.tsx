@@ -24,8 +24,6 @@ const FilmList = ({ search, statusFilter, typeFilter }: IProps) => {
   const { openModal, closeModal } = useModal();
   const mutation = useFilmMutations();
 
-  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
-  // const token = useToken({ audience: process.env.REACT_APP_AUDIENCE!, scope: 'FILMS:READ' });
   const films = useFilms();
 
   const handleEditFilm = useCallback((id: string) => {
