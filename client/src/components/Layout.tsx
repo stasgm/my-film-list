@@ -46,9 +46,9 @@ const Layout = () => {
 
   return (
     <div className="min-h-screen sm:bg-gray-100">
-      <header className="bg-green-900 sm:pb-2 sticky top-0 z-30">
+      <header className="bg-green-900 pb-2 sticky top-0 z-30">
         <div id="header">
-          <div className="tv:max-w-screen-2xl max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-2 sm:pt-4">
+          <div className="tv:max-w-screen-2xl max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-2 sm:pt-2">
             <UserPanel isAuthenticated={isAuthenticated} user={user} />
             {isAuthenticated
               ?
@@ -67,13 +67,10 @@ const Layout = () => {
       </header>
       <main className="sm:pt-4 sm:-mt-2" id="content">
         <div className="tv:max-w-screen-2xl max-w-7xl mx-auto sm:pb-12 sm:px-2 lg:px-8">
-
           {isAuthenticated ? (
             <FilmList search={search} statusFilter={statusFilter} typeFilter={typeFilter} />
           ) : (
-            <div
-              className="fixed inset-0 w-screen flex items-center justify-center bg-white text-opacity-75 text-gray-600"
-            >
+            <div className="fixed inset-0 w-screen flex items-center justify-center bg-white text-opacity-75 text-gray-600">
               <p>Log in to see your films list</p>
             </div>
           )}

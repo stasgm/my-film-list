@@ -1,20 +1,19 @@
-let apm;
 
-export const ApmSpanType = Object.freeze({
+let apm: any;
+
+export const ApmSpanType = {
   UNKNOWN: 'UNKNOWN',
   PURE_FUNCTION: 'pureFunction',
   API_REQUEST: 'apiRequest',
   SYSTEM: 'system',
   BACKEND: 'backend',
-});
+};
 
-function capitalizeFirstLetter(string) {
+function capitalizeFirstLetter(string: string) {
   return string.charAt(0).toUpperCase() + string.toLowerCase().slice(1);
 }
 
-function normalizeError(error) {
-  if (!FrontendDetectionHelper.isFrontend) return;
-
+function normalizeError(error: any) {
   if (error.errorCode) return error.errorCode;
 
   let errorMessage = undefined;
@@ -51,7 +50,7 @@ const fallbackRetObj = {
 };
 
 export const ApmHelper = {
-  setApm(apmInstance, { channel, track } = {}) {
+  setApm(apmInstance: any, { channel, track }: any = {}) {
     if (!apmInstance) throw new Error('Apm has not been defined.');
 
     apm = apmInstance;
@@ -59,12 +58,12 @@ export const ApmHelper = {
     channel && apm.addLabels('channel', channel);
     track && apm.addLabels('track', track);
   },
-  addTag(name, value) {
+  addTag(name: string, value: string) {
     if (this.isEnabled()) {
       apm.setTag(name, value);
     }
   },
-  captureError(error) {
+  captureError(error: any) {
     if (this.isEnabled()) {
       const errorMessage = normalizeError(error);
 
@@ -83,17 +82,17 @@ export const ApmHelper = {
       apm.captureError(error);
     }
   },
-  addCustomContext(name, value) {
+  addCustomContext(name: string, value: string) {
     if (this.isEnabled()) {
       apm.setContext(name, value);
     }
   },
   isEnabled() {
-    return true;
+    return apm;
     // apm rum isEnabled, apm agent isStarted()
     // return apm ? (apm.isEnabled !== undefined ? apm.isEnabled : apm.isStarted()) : false;
   },
-  startSpan(name, type = ApmSpanType.UNKNOWN, { transaction, data = {} } = {}) {
+  startSpan(name: string, type = ApmSpanType.UNKNOWN, { transaction, data = {} }: any = {}) {
     if (this.isEnabled()) {
       if (transaction && transaction.endTimestamp) {
         return fallbackRetObj;
@@ -107,7 +106,7 @@ export const ApmHelper = {
     }
     return fallbackRetObj;
   },
-  finishSpan(span) {
+  finishSpan(span: any) {
     if (this.isEnabled()) {
       if (span && span.endTimestamp) {
         return fallbackRetObj;
@@ -118,7 +117,7 @@ export const ApmHelper = {
   },
   getCurrentTransaction() {
     if (this.isEnabled()) {
-      return Sentry.getCurrentHub().getScope().getTransaction();
+      return apm.getCurrentHub().getScope().getTransaction();
     }
     return undefined;
   },
@@ -128,16 +127,16 @@ export const ApmHelper = {
     }
     return undefined;
   },
-  startTransaction(name, type = ApmSpanType.UNKNOWN) {
-    if (this.isEnabled()) {
+  startTransaction(name: string, type: string = ApmSpanType.UNKNOWN) {
+    if (apm && this.isEnabled()) {
       const tr = apm.startTransaction({ name, op: type });
       return tr ? tr : fallbackRetObj;
     }
 
     return fallbackRetObj;
   },
-  finishTransaction(transaction) {
-    if (this.isEnabled()) {
+  finishTransaction(transaction: any) {
+    if (apm && this.isEnabled()) {
       if (transaction && transaction.endTimestamp) {
         return fallbackRetObj;
       }
@@ -145,9 +144,9 @@ export const ApmHelper = {
     }
     return fallbackRetObj;
   },
-  apmDecorator(fn, { apmLabel, apmType, loggingEnabled = true, transaction } = {}) {
-    const wrapper = function (origin) {
-      return function (...args) {
+  apmDecorator(fn: () => void, { apmLabel, apmType, loggingEnabled = true, transaction }: any = {}) {
+    const wrapper = function (origin: any) {
+      return function (...args: any[]) {
         // Extend it to use apm or whatever you want
         const span = ApmHelper.startSpan(apmLabel, apmType, { transaction }); // you can use label if you need some extra meta
         try {

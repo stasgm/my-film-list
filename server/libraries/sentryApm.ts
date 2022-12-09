@@ -1,6 +1,6 @@
 import Sentry from '@sentry/node';
 import Tracing from '@sentry/tracing';
-import { ApmHelper } from '../../libraries/ApmHelper.js';
+import { ApmHelper } from '../../libraries/ApmHelper';
 
 // const mockApm = Object.freeze({
 //   startTransaction() {
@@ -10,17 +10,16 @@ import { ApmHelper } from '../../libraries/ApmHelper.js';
 //   },
 // });
 
-export default function (app) {
+export default function (app: any) {
   const sentryAPMClient = (() => {
-    Sentry.init({
+    const apm = Sentry;
+    apm?.init({
       // TODO move to ENV
       dsn: 'https://f6a0bfa8dd75472d941432b0ca28f34d@o110716.ingest.sentry.io/4504113588404224',
       enabled: process.env.NODE_ENV !== 'development',
       tracesSampleRate: 1.0,
       integrations: [new Tracing.Integrations.Mongo()],
     });
-
-    const apm = Sentry;
     // apm.addSpanFilter(function (payload) {
     //   if (payload && payload.context) {
     //     if (!payload.context.service) {
