@@ -1,4 +1,3 @@
-
 let apm: any;
 
 export const ApmSpanType = {

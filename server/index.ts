@@ -85,7 +85,7 @@ const mongoClient = new MongoClient(mongoURI);
         console.info('Server has been started');
         console.log(` * MODE: ${process.env.NODE_ENV === 'development' ? 'development' : 'production'}`);
         console.log(` * PORT: ${app.get('port')}`);
-        console.log(` * DB: ${mongoURI ? `${mongoURI}` : 'is not connected'}`);
+        console.log(` * DB: ${mongoURI ? mongoURI : 'is not connected'}`);
       },
       {
         apmLabel: 'Run server',
@@ -294,27 +294,11 @@ app.get('/debug-sentry', function mainHandler(req, res) {
   throw new Error('Test Sentry error!');
 });
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.resolve(__dirname, '../client/build', 'index.html'));
-// });
-
-// error handling
-// add global error handler
-
 app.use(
   errorHandler({
     sentryAPMClient: app.get('sentryAPMClient'),
   }),
 );
-
-// app.use(function (err, req, res, next) {
-//   console.error(err.stack);
-//   const errorObj = {
-//     error: err.message,
-//     sentry: res.sentry,
-//   };
-//   res.status(500).json(errorObj);
-// });
 
 process.on('SIGINT', async () => {
   await mongoClient.close();
