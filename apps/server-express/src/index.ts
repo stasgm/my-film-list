@@ -236,7 +236,7 @@ app.put('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  const result = await collection.findOneAndUpdate(
+  const result: { value: IDBFilm } = await collection.findOneAndUpdate(
     { _id: id, userId },
     { $set: filmData },
     { returnDocument: 'after' },
@@ -274,7 +274,7 @@ app.patch('/api/films/:id', jsonParser, async (req, res) => {
 
   const collection = req.app.locals.collection;
 
-  const result = await collection.findOneAndUpdate(
+  const result: { value: IDBFilm } = await collection.findOneAndUpdate(
     { _id: id, userId },
     { $set: filmData },
     { returnDocument: 'after' },
@@ -293,9 +293,11 @@ app.get('/api', (req, res) => {
   res.json({ message: 'My film list server' });
 });
 
-app.get('/debug-sentry', function mainHandler(req, res) {
+app.get('/debug-sentry', () => {
   throw new Error('Test Sentry error!');
 });
+
+app.get('/health', (_, res) => res.send({}));
 
 app.use(
   errorHandler({
