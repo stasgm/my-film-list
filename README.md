@@ -1,6 +1,10 @@
 # My fillm list
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/2e932c1f-419e-4904-8d67-b912d8594f78/deploy-status)](https://app.netlify.com/sites/my-film-list/deploys)
+## Deployment
+
+Web-client: [![Netlify Status](https://api.netlify.com/api/v1/badges/2e932c1f-419e-4904-8d67-b912d8594f78/deploy-status)](https://app.netlify.com/sites/my-film-list/deploys)
+
+Server-express:
 
 ## Todo
 
@@ -41,13 +45,3 @@
 - [ ]  add toast messages after successful\failed actions
 - [ ]  add button to show filter (disabled by default)
 - [x]  show the number of the filtered items after 'total film' title
-
-## Deployment
-
-### Heroku
-
-- heroku git:remote -a my-film-list
-- heroku config:set YARN_PRODUCTION=false (*to disable Only installing dependencies*)
-- heroku config:set NODE_ENV=production
-- heroku config:set MONGO_URI= (*mongo db link*)
-- git push -f heroku HEAD:master
