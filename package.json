@@ -19,7 +19,7 @@
     "clean": "lerna clean",
     "clean:all": "yarn clean:node-modules",
     "clean:dist": "rimraf libs/*/dist && rimraf apps/*/dist && apps/*/dist && rimraf configs/*/dist",
-    "clean:node-modules": "rimraf node_modules && rimraf apps/*/node_modules && rimraf packages/*/node_modules && rimraf configs/*/node_modules",
+    "clean:node-modules": "rimraf node_modules && rimraf apps/*/node_modules && rimraf libs/*/node_modules && rimraf configs/*/node_modules",
     "postinstall": "patch-package && husky install",
     "lerna": "lerna bootstrap",
     "lint": "lerna run --scope=@libs/* --scope=@apps/* lint --stream",
