@@ -35,7 +35,6 @@
       "yarn sort-package-json"
     ]
   },
-  "prettier": "@config/prettier-config",
   "dependencies": {
     "lerna": "^6.1.0"
   },
