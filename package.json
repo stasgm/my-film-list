@@ -16,6 +16,7 @@
     "server:start": "lerna run --scope=@apps/server-express start --stream",
     "client:dev": "lerna run --scope=@apps/web-client dev --stream",
     "client:start": "lerna run --scope=@apps/web-client start --stream",
+    "web-client:prod": "cd apps/web-client && yarn start",
     "clean": "lerna clean",
     "clean:all": "yarn clean:node-modules",
     "clean:dist": "rimraf libs/*/dist && rimraf apps/*/dist && apps/*/dist && rimraf configs/*/dist",
