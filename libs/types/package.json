@@ -1,0 +1,28 @@
+{
+  "name": "@libs/types",
+  "version": "1.0.0",
+  "description": "types for project",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "prettier:check": "prettier --check \"**/*.ts*\"",
+    "prettier:fix": "prettier --write \"**/*.ts*\"",
+    "lint": "eslint \"**/*.ts*\"",
+    "lint:fix": "eslint --fix \"**/*.ts*\"",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "yarn prettier:fix",
+      "yarn lint"
+    ]
+  },
+  "prettier": "@config/prettier-config",
+  "devDependencies": {
+    "typescript": "^4.9.4",
+    "@config/eslint-config": "*",
+    "@config/prettier-config": "*",
+    "lint-staged": "^13.1.0"
+  }
+}

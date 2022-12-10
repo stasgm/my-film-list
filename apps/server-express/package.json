@@ -32,6 +32,7 @@
   "prettier": "@config/prettier-config",
   "dependencies": {
     "@libs/apm": "*",
+    "@libs/types": "*",
     "@sentry/node": "^7.24.2",
     "@sentry/tracing": "^7.24.2",
     "body-parser": "^1.20.1",

@@ -4,22 +4,12 @@ import cors from 'cors';
 import compression from 'compression';
 import { auth } from 'express-oauth2-jwt-bearer';
 import 'dotenv/config';
-import { MongoClient, ObjectId } from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 import { ApmHelper, ApmSpanType } from '@libs/apm';
-import { IResourceType } from '@libs/types';
 import errorHandler from './middleware/global-error-handler';
 import sentryAPM from './libraries/sentryApm';
-
 import filmRoutes from './routes/films';
-
-interface IDBFilm {
-  _id: ObjectId;
-  name: string;
-  url: string;
-  seen: boolean;
-  type: IResourceType;
-}
 
 const { DOMAIN, AUDIENCE, PORT = 3030 } = process.env;
 
