@@ -10,9 +10,9 @@ Server-express:
 
 ### Back end
 
-- [ ] add auth0.com support
+- [x] add auth0.com support
 - [x] add envs (dev, test, prod)
-- [ ] deploy to Heroku
+- [x] deploy to Render
 - [ ] update patch method to pass only needed props
 - [ ] add sort number and sort by sort number
 - [ ] add tests
@@ -21,7 +21,7 @@ Server-express:
 
 ### Front end
 
-
+- [x] deploy to Netlify
 - [x] add login\logout
   - [ ] profile buttons
 - [ ] add fields:
