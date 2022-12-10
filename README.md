@@ -1,5 +1,7 @@
 # My fillm list
 
+[![Netlify Status](https://api.netlify.com/api/v1/badges/2e932c1f-419e-4904-8d67-b912d8594f78/deploy-status)](https://app.netlify.com/sites/my-film-list/deploys)
+
 ## Todo
 
 ### Back end
@@ -14,6 +16,7 @@
   - [ ] integration test
 
 ### Front end
+
 
 - [x] add login\logout
   - [ ] profile buttons
