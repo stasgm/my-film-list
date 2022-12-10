@@ -1,59 +1,49 @@
 {
-  "name": "my-film-list-server",
+  "name": "my-film-list",
   "version": "1.0.0",
-  "description": "My film list backend",
-  "main": "server.ts",
-  "author": "Stanislau Shliakhtsich",
+  "private": true,
   "license": "MIT",
-  "engines": {
-    "yarn": ">=1.22",
-    "node": ">=16.3.0 <= 18.12.0"
-  },
+  "author": "Stanislau Shlyahtich <stasgm@gmail.com>",
+  "workspaces": [
+    "apps/*",
+    "libs/*",
+    "configs/*"
+  ],
   "scripts": {
-    "prebuild": "rimraf ./client/build ./",
-    "client:start": "cd client && yarn start",
-    "build": "cd client && yarn install && yarn build",
-    "server:build": "tsc",
-    "server:check": "tsc --noemit",
-    "server:start": "node ./server/dist/index.js",
-    "server:dev-mon": "cross-env dotenv -e .env.local nodemon --exec ts-node ./server/index.ts",
-    "server:dev": "cross-env dotenv -e .env.local ts-node ./server/index.ts",
-    "server:prod": "cross-env yarn server:start",
-    "lint": "eslint \"{server,apps,client,test}/**/*.ts\"",
-    "lint:fix": "eslint --fix \"{server,apps,client,test}/**/*.ts\"",
-    "prettier:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
-    "prettier:fix": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\""
+    "build:libs": "lerna run --scope=@libs/* build --stream",
+    "build:apps": "lerna run --scope=@apps/* build --stream",
+    "server:dev": "lerna run --scope=@apps/server-express dev --stream",
+    "server:start": "lerna run --scope=@apps/server-express start --stream",
+    "client:dev": "lerna run --scope=@apps/web-client dev --stream",
+    "client:start": "lerna run --scope=@apps/web-client start --stream",
+    "clean": "lerna clean",
+    "clean:all": "yarn clean:node-modules",
+    "clean:dist": "rimraf libs/*/dist && rimraf apps/*/dist && apps/*/dist && rimraf configs/*/dist",
+    "clean:node-modules": "rimraf node_modules && rimraf apps/*/node_modules && rimraf packages/*/node_modules && rimraf configs/*/node_modules",
+    "postinstall": "patch-package && husky install",
+    "lerna": "lerna bootstrap",
+    "lint": "lerna run --scope=@libs/* --scope=@apps/* lint --stream",
+    "lint-staged-project": "lerna run --scope=@libs/* --scope=@apps/* --concurrency 1 --stream precommit --since HEAD --exclude-dependents",
+    "lint:fix": "lerna run --scope=@libs/* --scope=@apps/* lint:fix --stream",
+    "prepare": "husky install",
+    "prettier:fix": "lerna run --scope=@libs/* --scope=@apps/* prettier:fix --stream",
+    "update": "yarn upgrade-interactive --latest"
   },
-  "dependencies": {
-    "@sentry/node": "^7.17.4",
-    "@sentry/tracing": "^7.17.4",
-    "body-parser": "^1.20.1",
-    "compression": "^1.7.4",
-    "cors": "^2.8.5",
-    "cross-env": "^7.0.3",
-    "dotenv": "^16.0.3",
-    "dotenv-cli": "^6.0.0",
-    "express": "^4.18.2",
-    "express-oauth2-jwt-bearer": "^1.2.0",
-    "http-proxy-middleware": "^2.0.6",
-    "mongodb": "^4.11.0",
-    "rimraf": "^3.0.2",
-    "typescript": "^4.9.3"
+  "lint-staged": {
+    "package.json": [
+      "yarn prettier:fix",
+      "yarn sort-package-json"
+    ]
   },
+  "prettier": "@config/prettier-config",
   "devDependencies": {
-    "@types/compression": "^1.7.2",
-    "@types/cors": "^2.8.13",
-    "@types/express": "^4.17.14",
-    "@types/mongodb": "^4.0.6",
-    "@types/node": "^18.11.9",
-    "eslint": "^8.27.0",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-promise": "^6.1.1",
-    "nodemon": "^2.0.20",
-    "prettier": "^2.7.1",
-    "ts-node": "^10.9.1"
+    "rimraf": "^3.0.2",
+    "@config/prettier-config": "*",
+    "concurrently": "^7.6.0",
+    "husky": "^8.0.2",
+    "lerna": "^6.1.0",
+    "lint-staged": "^13.1.0",
+    "patch-package": "^6.5.0",
+    "sort-package-json": "^2.1.0"
   }
 }
