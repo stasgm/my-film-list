@@ -16,7 +16,7 @@
     "start": "node ./dist/index.js",
     "dev-mon": "cross-env dotenv -e .env.local nodemon --exec ts-node ./src/index.ts",
     "dev": "cross-env dotenv -e .env.local ts-node ./src/index.ts",
-    "prod": "cross-env yarn server:start",
+    "prod": "cross-env yarn start",
     "prettier:check": "prettier --check \"**/*.ts*\"",
     "prettier:fix": "prettier --write \"**/*.ts*\"",
     "lint": "eslint \"**/*.ts*\"",
